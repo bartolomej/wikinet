@@ -1,10 +1,10 @@
 const rp = require('request-promise');
 const $ = require('cheerio');
-const repo = require('../store/DbRepo');
-const ScrapeUtil = require('../utils/ScrapeUtil');
+const repo = require('../db/GraphDb');
+const ScrapeUtil = require('./ScrapeUtil');
 const UID = require('uuid');
-const Graph = require('../models/Graph');
-const Node = require('../models/Node');
+const Graph = require('./models/Graph');
+const Node = require('./models/Node');
 
 const URL = 'https://en.wikipedia.org';
 
@@ -47,8 +47,8 @@ async function scrapeAll(limit) {
 }
 
 async function scrape(uid) {
-  let page = await repo.getPage(uid);
-  let html = await request(URL + page.href);
+  let node = await repo.getNode(uid);
+  let html = await request(URL + node.data.href);
   let {results} = extractResults(html);
 
   for (let i = 0; i < results.length; i++) {
@@ -63,7 +63,7 @@ async function scrape(uid) {
         scraped: false,
         description: ''
       });
-      await repo.addEdge(page.uid, uid);
+      await repo.addEdge(node.uid, uid);
     } catch (e) {
       console.log(e)
     }
