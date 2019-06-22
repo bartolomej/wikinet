@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon ./bin/www",
+    "init_test": "cd tests/db && sh init_db.sh && sh init_data.sh",
+    "init_data": "cd tests/db && sh init_data.sh",
+    "drop_test": "cd tests/db && sh purge_data.sh"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",

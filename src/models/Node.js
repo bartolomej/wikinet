@@ -15,6 +15,8 @@ module.exports = class Node {
     }
   }
 
-  // TODO: implement domain object serialization in repo
-
+  addEdges(nodeUids) {
+    nodeUids.forEach(this.addEdge)
+  }
+  
 };

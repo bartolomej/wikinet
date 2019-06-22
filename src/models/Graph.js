@@ -9,6 +9,7 @@ module.exports = class Graph {
   constructor() {
     this.nodes = {};
     this.edges = {};
+    this.degrees = {};
   }
 
   addNode(node) {
@@ -17,25 +18,26 @@ module.exports = class Graph {
     }
   }
 
+  addNodesForDegree(degree, nodes) {
+    this.degrees[degree] = [];
+    nodes.forEach(node => {
+      this.degrees[degree].push(node.uid);
+      this.nodes.push(node);
+    })
+  }
+
   addEdge(fromUid, toUid) {
     if (!this.nodes[fromUid])
       throw new Error(`Node ${fromUid} doesn't exist`);
     this.nodes[fromUid].addEdge(toUid);
   }
 
-  getById(uid) {
-    return this.nodes[uid];
+  getFirstDegreeUids() {
+    return this.degrees[1];
   }
 
-  getStatistics() {
-    let stats = {
-      // TODO: implement graph stats
-    };
-    function traverse(nodes) {
-      nodes.forEach(node => {
-
-      })
-    }
+  getById(uid) {
+    return this.nodes[uid];
   }
 
   bfs(startNodeUid) {

@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const service = require('../src/WikiScraper');
+const service = require('../src/services/ScrapeService');
 const store = require('../db/GraphDb');
 
-/* GET home page. */
+
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
+  res.render('demo', { title: 'Express' });
+});
+
+router.get('/vis', (req, res, next) => {
+  res.render('graph', { title: 'Express' });
 });
 
 router.get('/page', async (req, res, next) => {

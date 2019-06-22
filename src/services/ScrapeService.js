@@ -1,36 +1,10 @@
 const rp = require('request-promise');
 const $ = require('cheerio');
-const repo = require('../db/GraphDb');
-const ScrapeUtil = require('./ScrapeUtil');
+const repo = require('../../db/GraphDb');
+const ScrapeUtil = require('../ScrapeUtil');
 const UID = require('uuid');
-const Graph = require('./models/Graph');
-const Node = require('./models/Node');
 
 const URL = 'https://en.wikipedia.org';
-
-async function firstDegreeGraph() {
-  // TODO: load graph node by node
-  let graph = new Graph();
-  let firstNode = await repo.getNode('1');
-  graph.addNode(firstNode);
-  for (let uid in graph.edges) {
-    graph.addNode(await repo.getNode(uid))
-  }
-  return graph;
-}
-
-async function fullGraph() {
-  let graph = new Graph();
-  let firstNode = await repo.getNode('1');
-  await traverse(firstNode, 0);
-
-  async function traverse(node, i) {
-    let secondNode = await repo.getNode(node.uid);
-    graph.addNode(secondNode);
-    traverse(secondNode, i++);
-  }
-  return graph;
-}
 
 async function scrapeAll(limit) {
   let pages = await repo.getUnscraped(limit);

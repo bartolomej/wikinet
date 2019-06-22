@@ -3,7 +3,7 @@ const uid = require('uuid');
 
 test('insert first page', async () => {
   const firstPage = {
-    uid: '2',
+    uid: '1111111',
     data: {
       type: 'article',
       title: 'Epistemology',
@@ -14,8 +14,8 @@ test('insert first page', async () => {
   };
   await DbRepo.addPage(firstPage);
 
-  expect(await DbRepo.getPage('2')).toEqual({
-    uid: '2',
+  expect(await DbRepo.getPage('1111111')).toEqual({
+    uid: '1111111',
     data: {
       type: 'article',
       title: 'Epistemology',
@@ -26,19 +26,7 @@ test('insert first page', async () => {
     edges: {}
   });
 
-  DbRepo.removePage('2');
-});
-
-test('get page', async () => {
-  expect(await DbRepo.getPage('479cc36c-aeb9-439b-830b-972b5fedef92')).toBe();
-});
-
-test('get unscraped', async () => {
-  expect(await DbRepo.getUnscraped(3)).toBe();
-});
-
-test('update scraped', async () => {
-  expect(await DbRepo.updateScraped('479cc36c-aeb9-439b-830b-972b5fedef92', true)).toBe();
+  DbRepo.removePage('1111111');
 });
 
 test('get pages', async () => {

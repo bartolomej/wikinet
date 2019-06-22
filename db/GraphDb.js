@@ -5,6 +5,7 @@ const Inserts = require('./sql/Inserts');
 const Update = require('./sql/Update');
 const Delete = require('./sql/Delete');
 
+
 async function getNode(uid) {
   let firstNode = deserialize(await getPage('1'));
   let neighbors = await getNeighborIds('1');
@@ -24,10 +25,22 @@ async function getAllNodes(limit) {
   return nodes;
 }
 
-
+async function getNodes(uids) {
+  let nodes = [];
+  uids.forEach(async uid => {
+    let node = await getPage(uid);
+    nodes.push(deserialize(node));
+  });
+  return nodes;
+}
 
 async function getAllPages(limit) {
   return await query(Queries.getAllPages(limit));
+}
+
+async function getSecondDegreeNodes(limit) {
+  let nodes = await query(Queries.getSecondDegreeNodes(limit));
+  return nodes.map(deserialize);
 }
 
 async function addPage(node) {
@@ -60,7 +73,6 @@ async function getNeighbors(uid) {
 async function getNeighborIds(uid) {
   return await query(Queries.getNeighborIds(uid));
 }
-
 
 async function removeAllPages() {
   await query(Delete.deleteAllPages());
@@ -97,9 +109,11 @@ function deserialize(node) {
 
 module.exports = {
   getNode,
+  getNodes,
   addPage,
   addEdge,
   getUnscraped,
+  getSecondDegreeNodes,
   updateScraped,
   getAllNodes,
   getAllPages,
