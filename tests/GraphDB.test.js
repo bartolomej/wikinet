@@ -1,47 +1,164 @@
 const DbRepo = require('../db/GraphDb');
+const DbFactory = require('../db/DbFactory');
 const uid = require('uuid');
 
-test('insert first page', async () => {
-  const firstPage = {
-    uid: '1111111',
-    data: {
-      type: 'article',
-      title: 'Epistemology',
-      href: '/wiki/Epistemology',
-      endNode: true,
-      description: ''
-    }
-  };
-  await DbRepo.addPage(firstPage);
 
-  expect(await DbRepo.getPage('1111111')).toEqual({
-    uid: '1111111',
-    data: {
-      type: 'article',
-      title: 'Epistemology',
-      href: '/wiki/Epistemology',
-      endNode: true,
-      description: ''
-    },
-    edges: {}
+describe('Graph database updates and queries', function () {
+
+  it('should insert new page', async () => {
+    const firstPage = {
+      uid: '1111111',
+      data: {
+        type: 'article',
+        title: 'Epistemology',
+        href: '/wiki/Epistemology',
+        endNode: true,
+        description: ''
+      }
+    };
+    await DbRepo.addPage(firstPage);
+
+    expect(await DbRepo.getPage('1111111')).toEqual({
+      uid: '1111111',
+      data: {
+        type: 'article',
+        title: 'Epistemology',
+        href: '/wiki/Epistemology',
+        endNode: true,
+        description: ''
+      },
+      edges: {}
+    });
+
+    DbRepo.removePage('1111111');
   });
 
-  DbRepo.removePage('1111111');
 });
 
-test('get pages', async () => {
-  let pages = await DbRepo.getAllPages(10);
-  let deserialized = pages.map(DbRepo.deserialize);
-  expect(deserialized).toBe();
+describe('Graph database queries on test data', function () {
+
+  it('should return initial node edges', async () => {
+    DbFactory.init('wiki_test');
+    let edges = await DbRepo.getNeighborIds('1');
+    expect(edges).toEqual([
+      {to_node: '2'},
+      {to_node: '3'},
+      {to_node: '4'},
+      {to_node: '5'},
+      {to_node: '6'},
+      {to_node: '7'},
+    ]);
+  });
+
+  it('should return initial node', async () => {
+    DbFactory.init('wiki_test');
+    let node = await DbRepo.getNode('1');
+    expect(node).toEqual({
+      uid: '1',
+      data: {
+        title: 'First page',
+        type: 'page',
+        description: 'Initial node',
+        href: '',
+        endNode: false
+      },
+      edges: [
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7'
+      ]
+    });
+  });
+
+  it('should return empty neighbors', async () => {
+    DbFactory.init('wiki_test');
+    let edges = await DbRepo.getNeighborIds('10');
+    expect(edges).toEqual([])
+  });
+
+  it('should return 2 nodes', async () => {
+    DbFactory.init('wiki_test');
+    let nodes = await DbRepo.getAllNodes(2);
+    expect(nodes).toEqual([
+      {
+        uid: '1',
+        data: {
+          title: 'First page',
+          type: 'page',
+          description: 'Initial node',
+          href: '',
+          endNode: false
+        },
+        edges: ['2', '3', '4', '5', '6', '7']
+      },
+      {
+        uid: '10',
+        data: {
+          title: 'Tenth page',
+          type: 'page',
+          description: 'Second degree',
+          href: '',
+          endNode: false
+        },
+        edges: []
+      }
+    ])
+  });
+
+  it('should return 2 nodes by uids', async () => {
+    DbFactory.init('wiki_test');
+    let nodes = await DbRepo.getNodes(['1', '10']);
+    expect(nodes).toEqual([
+      {
+        uid: '1',
+        data: {
+          title: 'First page',
+          type: 'page',
+          description: 'Initial node',
+          href: '',
+          endNode: false
+        },
+        edges: ['2', '3', '4', '5', '6', '7']
+      },
+      {
+        uid: '10',
+        data: {
+          title: 'Tenth page',
+          type: 'page',
+          description: 'Second degree',
+          href: '',
+          endNode: false
+        },
+        edges: []
+      }
+    ])
+  });
+
 });
 
-test('get neighbor', async () => {
-  let uid = '00005481-1b2c-4e60-8396-4b3e57c637e9';
-  let neighbor = await DbRepo.getNeighborIds(uid);
-  expect(neighbor).toBe();
-});
 
-test('get nodes', async () => {
-  let nodes = await DbRepo.getAllNodes(10);
-  expect(nodes).toBe();
+describe('Graph queries on real data', function () {
+
+  it('should get initial page', async () => {
+    DbFactory.init('wiki');
+    let node = await DbRepo.getNode('1', 100);
+    expect(node).toEqual([]);
+  });
+
+  it('should get nodes with limit', async () => {
+    DbFactory.init('wiki');
+    let nodes = await DbRepo.getAllNodes(100);
+    expect(nodes).toEqual([]);
+  });
+
+  it('should construct first degree graph starting from initial node', async () => {
+    DbFactory.init('wiki');
+    let initialNode = await DbRepo.getNode('1', 100);
+    let neighbors = await DbRepo.getNodes(initialNode.edges);
+    expect(neighbors).toEqual();
+  });
+
 });

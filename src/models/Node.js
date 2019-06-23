@@ -3,16 +3,11 @@ module.exports = class Node {
   constructor(uid, data) {
     this.uid = uid;
     this.data = data;
-    this.edges = {};
-    // TODO: add specific fields
+    this.edges = [];
   }
 
   addEdge(nodeUid) {
-    if (!this.edges[nodeUid]) {
-      this.edges[nodeUid] = 1;
-    } else {
-      this.edges[nodeUid]++;
-    }
+    this.edges.push(nodeUid);
   }
 
   addEdges(nodeUids) {

@@ -1,16 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const service = require('../src/services/ScrapeService');
+const ScrapeService = require('../src/services/ScrapeService');
+const GraphService = require('../src/services/GraphService');
 const store = require('../db/GraphDb');
-
-
-router.get('/', (req, res, next) => {
-  res.render('demo', { title: 'Express' });
-});
-
-router.get('/vis', (req, res, next) => {
-  res.render('graph', { title: 'Express' });
-});
 
 router.get('/page', async (req, res, next) => {
   res.json(await store.getAllPages(req.query.limit));
@@ -25,7 +17,7 @@ router.get('/node/:uid', async (req, res, next) => {
 });
 
 router.get('/graph', async (req, res, next) => {
-  res.json(await service.fullGraph())
+  res.json(await GraphService.twoDegreeGraph(req.query.limit))
 });
 
 module.exports = router;

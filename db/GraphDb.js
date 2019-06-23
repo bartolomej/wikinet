@@ -6,32 +6,25 @@ const Update = require('./sql/Update');
 const Delete = require('./sql/Delete');
 
 
-async function getNode(uid) {
-  let firstNode = deserialize(await getPage('1'));
-  let neighbors = await getNeighborIds('1');
-  neighbors.forEach(row => {
-    firstNode.addEdge(row.uid)
-  });
-  return firstNode;
+async function getNode(uid, edgeLimit) {
+  let node = deserialize(await getPage(uid));
+  let neighbors = await getNeighborIds(uid, edgeLimit);
+  neighbors.forEach(row => node.addEdge(row.to_node));
+  return node;
 }
 
 async function getAllNodes(limit) {
   let pages = await getAllPages(limit);
   let nodes = pages.map(deserialize);
-  nodes.forEach(async node => {
-    let neighbors = await getNeighborIds(node.uid);
-    neighbors.forEach(neighbor => node.addEdge(neighbor))
-  });
-  return nodes;
+  return Promise.all(nodes.map(async node => {
+    let neighbors = await getNeighborIds(node.uid, limit);
+    neighbors.forEach(e => node.addEdge(e.to_node));
+    return node;
+  }));
 }
 
 async function getNodes(uids) {
-  let nodes = [];
-  uids.forEach(async uid => {
-    let node = await getPage(uid);
-    nodes.push(deserialize(node));
-  });
-  return nodes;
+  return Promise.all(uids.map(async uid => await getNode(uid)));
 }
 
 async function getAllPages(limit) {
@@ -70,8 +63,8 @@ async function getNeighbors(uid) {
   return await query(Queries.getNeighbors(uid));
 }
 
-async function getNeighborIds(uid) {
-  return await query(Queries.getNeighborIds(uid));
+async function getNeighborIds(uid, limit) {
+  return await query(Queries.getNeighborIds(uid, limit));
 }
 
 async function removeAllPages() {

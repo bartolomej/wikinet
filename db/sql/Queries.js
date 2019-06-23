@@ -20,11 +20,12 @@ module.exports.getNeighbors = (fromUid) => {
   )
 };
 
-module.exports.getNeighborIds = (fromUid) => {
+module.exports.getNeighborIds = (fromUid, limit) => {
   return (
     `SELECT r.to_node
      FROM reference r
-     WHERE r.from_node = ${fromUid}`
+     WHERE r.from_node = '${fromUid}' 
+     ${limit === undefined ? '' : `LIMIT ${limit}`}`
   )
 };
 

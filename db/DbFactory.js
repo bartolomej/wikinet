@@ -1,13 +1,16 @@
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'rootPass',
-  database : 'wiki'
-});
+let connection;
 
-connection.connect();
+module.exports.init = database => {
+  connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : 'rootPass',
+    database : database
+  });
+  connection.connect();
+};
 
 module.exports.query = async (queryString, handler) => {
   return new Promise((resolve, reject) => {

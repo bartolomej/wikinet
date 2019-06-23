@@ -18,6 +18,10 @@ module.exports = class Graph {
     }
   }
 
+  addNodes(nodes) {
+    nodes.forEach(this.addNode);
+  }
+
   addNodesForDegree(degree, nodes) {
     this.degrees[degree] = [];
     nodes.forEach(node => {
