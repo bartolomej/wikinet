@@ -10,12 +10,16 @@ module.exports.twoDegreeGraph = async function (limit) {
 
   for (let i = 0; i < initialNode.edges.length; i++) {
     let firstNode = await repo.getNode(initialNode.edges[i], limit);
+    graph.push(firstNode);
     for (let j = 0; j < firstNode.edges.length; j++) {
       let secNode = await repo.getNode(firstNode.edges[j], limit);
-      secNode.edges = [];
       graph.push(secNode);
+      for (let z = 0; z < secNode.edges.length; z++) {
+        let thirdNode = await repo.getNode(secNode.edges[z], limit);
+        thirdNode.edges = [];
+        graph.push(thirdNode);
+      }
     }
-    graph.push(firstNode);
   }
 
   return graph;

@@ -1,12 +1,12 @@
 const WikiScraper = require('../src/services/ScrapeService');
-const {read} = require('./TestUtils');
+const {read, request} = require('./TestUtils');
 const path = require('path');
 
 describe('Scrape service tests', function () {
 
   it('should extract details from html webpage', async () => {
-    let wikiPage1 = await read(path.join(__dirname, 'res/epistemology.wiki.htm'));
-    let wikiPage2 = await read(path.join(__dirname, 'res/knowledge.wiki.htm'));
+    let wikiPage1 = await request('https://en.wikipedia.org/wiki/Epistemology');
+    let wikiPage2 = await request('https://en.wikipedia.org/wiki/Knowledge');
 
     let extracted1 = WikiScraper.extractDetails(wikiPage1);
     let extracted2 = WikiScraper.extractDetails(wikiPage2);

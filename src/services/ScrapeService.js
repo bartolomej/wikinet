@@ -1,4 +1,4 @@
-const requestPromise = require('request-promise');
+const request = require('../ScrapeUtil').request;
 const $ = require('cheerio');
 const repo = require('../db/GraphDb');
 const ScrapeUtil = require('../ScrapeUtil');
@@ -75,14 +75,6 @@ function extractText(html) {
       return parseText(nodes, data, ++counter)
     }
   }
-}
-
-async function request(url) {
-  return new Promise((resolve, reject) => {
-    requestPromise(url)
-      .then(html => resolve(html))
-      .catch(err => reject(err))
-  })
 }
 
 module.exports = {

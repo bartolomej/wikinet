@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const $ = require('cheerio');
+const requestPromise = require('request-promise');
 
 module.exports.extractTestData = function (html, filename) {
   let links = $('a', html);
@@ -26,4 +27,12 @@ module.exports.read = function (filePath) {
       err ? reject(err) : resolve(data)
     ));
   });
+};
+
+module.exports.request = async function(url) {
+  return new Promise((resolve, reject) => {
+    requestPromise(url)
+      .then(html => resolve(html))
+      .catch(err => reject(err))
+  })
 };
