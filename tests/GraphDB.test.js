@@ -1,5 +1,5 @@
-const DbRepo = require('../db/GraphDb');
-const DbFactory = require('../db/DbFactory');
+const DbRepo = require('../src/db/GraphDb');
+const DbFactory = require('../src/db/DbFactory');
 const uid = require('uuid');
 
 

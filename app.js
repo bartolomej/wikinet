@@ -3,14 +3,15 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const DbFactory = require('./db/DbFactory');
+const DbFactory = require('./src/db/DbFactory');
+const dbConfig = require('./config').db;
 
 const indexRouter = require('./routes/views');
 const usersRouter = require('./routes/api');
 
 const app = express();
 
-DbFactory.init('wiki');
+DbFactory.init(dbConfig);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

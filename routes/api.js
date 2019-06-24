@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ScrapeService = require('../src/services/ScrapeService');
 const GraphService = require('../src/services/GraphService');
-const store = require('../db/GraphDb');
+const store = require('../src/db/GraphDb');
 
 router.get('/page', async (req, res, next) => {
   res.json(await store.getAllPages(req.query.limit));

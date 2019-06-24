@@ -1,21 +1,21 @@
-const rp = require('request-promise');
+const requestPromise = require('request-promise');
 const $ = require('cheerio');
-const repo = require('../../db/GraphDb');
+const repo = require('../db/GraphDb');
 const ScrapeUtil = require('../ScrapeUtil');
-const UID = require('uuid');
 
 const URL = 'https://en.wikipedia.org';
 
-async function scrapeAll(limit) {
+async function scrapeAll(limit, infoCallback) {
+  // TODO: add smarts (scrape poorly connected pages,..)
   let pages = await repo.getUnscraped(limit);
 
   for (let i = 0; i < pages.length; i++) {
     let uid = pages[i].uid;
     try {
       await scrape(uid);
-      await repo.updateScraped(uid, true);
+      infoCallback(i, uid);
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
   }
 }
@@ -23,19 +23,15 @@ async function scrapeAll(limit) {
 async function scrape(uid) {
   let node = await repo.getNode(uid);
   let html = await request(URL + node.data.href);
-  let {results} = extractResults(html);
+  let {details, links} = extractDetails(html);
+  await repo.updatePage(uid, true, '');
 
-  for (let i = 0; i < results.length; i++) {
-    let entity = results[i];
-    let uid = UID();
+  for (let i = 0; i < links.length; i++) {
+    let {uid, title, type, href} = links[i];
     try {
       await repo.addPage({
-        uid,
-        type: ScrapeUtil.getType(entity.title),
-        title: ScrapeUtil.formatTitle(entity.title),
-        href: entity.href,
-        scraped: false,
-        description: ''
+        uid, type, title, href,
+        scraped: false, description: ''
       });
       await repo.addEdge(node.uid, uid);
     } catch (e) {
@@ -44,30 +40,46 @@ async function scrape(uid) {
   }
 }
 
-function extractResults(html) {
-  let name = $('.firstHeading', html).text();
-  let links = $('a', html);
-
-  let results = [];
-  for (let i = 0; i < links.length; i++) {
-    let node = links[i];
-    let attrib = node.attribs;
-    if (
-      attrib &&
-      attrib.title &&
-      attrib.href
-    ) results.push({
-      title: attrib.title,
-      href: attrib.href
-    })
+function extractDetails(html) {
+  let title = $('.firstHeading', html).text();
+  let details = extractText(html)
+    .replace("'", '')
+    .replace('"', '');
+  let linkData = $('a', html);
+  let links = [];
+  for (let i = 0; i < linkData.length; i++) {
+    if (!linkData[i].hasOwnProperty("attribs")) continue;
+    let attributes = linkData[i].attribs;
+    if (attributes.title && attributes.href) {
+      let title = ScrapeUtil.formatTitle(attributes.title);
+      let type = ScrapeUtil.getType(attributes.title);
+      let href = ScrapeUtil.formatLink(attributes.href);
+      let uid = ScrapeUtil.generateUid(title);
+      links.push({uid, title, type, href});
+    }
   }
+  return {title, details, links};
+}
 
-  return {name, results}
+function extractText(html) {
+  return parseText($('p', html), "", 0);
+
+  function parseText(nodes, data, counter) {
+    if (counter >= nodes.length) return data;
+    if (nodes[counter].hasOwnProperty("children")) {
+      data += parseText(nodes[counter].children, "", 0);
+    }
+    if (nodes[counter].type === 'text') {
+      return parseText(nodes, data + nodes[counter].data, ++counter)
+    } else {
+      return parseText(nodes, data, ++counter)
+    }
+  }
 }
 
 async function request(url) {
   return new Promise((resolve, reject) => {
-    rp(url)
+    requestPromise(url)
       .then(html => resolve(html))
       .catch(err => reject(err))
   })
@@ -76,6 +88,6 @@ async function request(url) {
 module.exports = {
   request,
   scrape,
-  extractResults,
   scrapeAll,
+  extractDetails
 };

@@ -67,12 +67,12 @@
     };
 
     (async function () {
-        let nodesRes = await getGraph(100);
+        let nodesRes = await getGraph(10);
 
         nodesRes.forEach(node => {
           g.nodes.push({
               id: node.uid,
-              label: node.title,
+              label: node.data.title,
               x: Math.random(),
               y: Math.random(),
               size: Math.random(),

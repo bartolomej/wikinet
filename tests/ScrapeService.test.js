@@ -1,5 +1,5 @@
 const WikiScraper = require('../src/services/ScrapeService');
-const fs = require('fs');
+const {read} = require('./TestUtils');
 const path = require('path');
 
 describe('Scrape service tests', function () {
@@ -11,17 +11,11 @@ describe('Scrape service tests', function () {
     let extracted1 = WikiScraper.extractDetails(wikiPage1);
     let extracted2 = WikiScraper.extractDetails(wikiPage2);
 
-    expect(extracted1).toEqual({
-      title: 'Epistemology',
-      details: [],
-      links: []
-    });
+    expect(extracted1.title).toEqual('Epistemology');
+    expect(extracted1.links.length).toEqual(1501);
 
-    expect(extracted2).toEqual({
-      title: 'Knowledge',
-      details: [],
-      links: []
-    })
+    expect(extracted2.title).toEqual('Knowledge');
+    expect(extracted2.links.length).toEqual(1056);
   });
 
   it('should scrape initial page twice', async () => {
@@ -29,11 +23,3 @@ describe('Scrape service tests', function () {
   });
 
 });
-
-function read(filePath) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, {encoding: 'utf-8'}, (err, data) => (
-      err ? reject(err) : resolve(data)
-    ));
-  });
-}

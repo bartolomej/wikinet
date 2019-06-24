@@ -1,3 +1,5 @@
+const UUID = require('uuid-by-string');
+
 String.prototype.splice = function(idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
 };
@@ -18,4 +20,15 @@ module.exports.formatTitle = (title) => {
     return title.splice(index, 0, "'");
   else
     return title;
+};
+
+module.exports.formatLink = link => {
+  return link;
+};
+
+module.exports.generateUid = title => {
+  const normalized = title
+    .replace(" ", "")
+    .toLowerCase();
+  return UUID(normalized);
 };

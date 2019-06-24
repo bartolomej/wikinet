@@ -7,7 +7,23 @@ module.exports.getAllPages = (limit) => {
 };
 
 module.exports.getUnscrapedPages = (limit) => {
-  return `SELECT * FROM page where scraped = false LIMIT ${limit}`;
+  return (
+    `SELECT * FROM page p
+    LEFT JOIN reference r
+    ON r.from_node = p.uid
+    WHERE r.from_node is null
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}`
+  );
+};
+
+module.exports.getConnectionsStats = () => {
+  return (
+    `SELECT p.title, count(r.from_node) as connections 
+    FROM page p
+    INNER JOIN reference r 
+    ON r.from_node = p.uid
+    GROUP BY from_node`
+  )
 };
 
 module.exports.getNeighbors = (fromUid) => {

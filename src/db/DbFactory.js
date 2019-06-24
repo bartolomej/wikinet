@@ -1,14 +1,8 @@
 const mysql = require('mysql');
-
 let connection;
 
-module.exports.init = database => {
-  connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'rootPass',
-    database : database
-  });
+module.exports.init = dbConfig => {
+  connection = mysql.createConnection(dbConfig);
   connection.connect();
 };
 

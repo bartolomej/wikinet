@@ -1,4 +1,4 @@
-const Node = require('../src/models/Node');
+const Node = require('../models/Node');
 const {query} = require('./DbFactory');
 const Queries = require('./sql/Queries');
 const Inserts = require('./sql/Inserts');
@@ -40,6 +40,10 @@ async function addPage(node) {
   await query(Inserts.addPage(node));
 }
 
+async function updatePage(uid, scraped, description) {
+  await query(Update.updatePage(uid, scraped, description));
+}
+
 async function addEdge(uidFrom, uidTo) {
   await query(Inserts.addEdge(uidFrom, uidTo));
 }
@@ -55,8 +59,8 @@ async function getUnscraped(limit) {
   return await query(Queries.getUnscrapedPages(limit));
 }
 
-async function updateScraped(uid, scraped) {
-  await query(Update.updateScraped(uid, scraped));
+async function getConnectionStats() {
+  return await query(Queries.getConnectionsStats());
 }
 
 async function getNeighbors(uid) {
@@ -107,13 +111,14 @@ module.exports = {
   addEdge,
   getUnscraped,
   getSecondDegreeNodes,
-  updateScraped,
+  updatePage,
   getAllNodes,
   getAllPages,
   getNeighbors,
   getNeighborIds,
   removePage,
   removeAllPages,
+  getConnectionStats,
   removeAllReferences,
   serialize,
   deserialize

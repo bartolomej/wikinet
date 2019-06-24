@@ -6,7 +6,7 @@ CREATE TABLE page (
     title varchar(100),
     href varchar(200),
     scraped boolean,
-    description varchar(10000)
+    description mediumtext
 );
 
 CREATE TABLE reference (
