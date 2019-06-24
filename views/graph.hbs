@@ -45,6 +45,11 @@
 <script src="sigma/misc/sigma.misc.bindEvents.js"></script>
 <script src="sigma/misc/sigma.misc.bindDOMEvents.js"></script>
 <script src="sigma/misc/sigma.misc.drawHovers.js"></script>
+
+<!-- Sigma plugins -->
+<script src="https://cdn.jsdelivr.net/npm/sigma@1.2.1/plugins/sigma.layout.forceAtlas2/supervisor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sigma@1.2.1/plugins/sigma.layout.forceAtlas2/worker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sigma@1.2.1/plugins/sigma.plugins.relativeSize/sigma.plugins.relativeSize.js"></script>
 <!-- END SIGMA IMPORTS -->
 <div id="container">
     <style>
@@ -60,14 +65,22 @@
 </div>
 <script>
 
-    let s;
+    let s = new sigma(
+            {
+                renderer: {
+                    container: document.getElementById('graph-container'),
+                    type: 'canvas'
+                },
+                settings: {}
+            }
+    );
     let g = {
       nodes: [],
       edges: []
     };
 
     (async function () {
-        let nodesRes = await getGraph(10);
+        let nodesRes = await getGraph(200);
 
         nodesRes.forEach(node => {
           g.nodes.push({
@@ -90,10 +103,12 @@
           });
         });
 
-        s = new sigma({
-            graph: g,
-            container: 'graph-container'
-        });
+        // load the graph
+        s.graph.read(g);
+        sigma.plugins.relativeSize(s, 1);
+        s.refresh();
+        s.startForceAtlas2();
+        window.setTimeout(function() {s.killForceAtlas2()}, 10000);
     })();
 
     async function getGraph(limit) {
