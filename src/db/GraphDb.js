@@ -1,17 +1,35 @@
 const Node = require('../models/Node');
-const {query} = require('./DbFactory');
 const Queries = require('./sql/Queries');
 const Inserts = require('./sql/Inserts');
 const Update = require('./sql/Update');
 const Delete = require('./sql/Delete');
+const mysql = require('mysql');
+let connection;
+
+function init(dbConfig) {
+  connection = mysql.createConnection(dbConfig);
+  connection.connect();
+}
+
+async function query(queryString, handler) {
+  return new Promise((resolve, reject) => {
+    if (handler === undefined) {
+      connection.query(queryString, (error, results) => (
+        error ? reject(error) : resolve(results)
+      ));
+    } else {
+      connection.query(queryString, handler);
+    }
+  })
+}
 
 
-async function getNode(uid, edgeLimit) {
-  let node = deserialize(await getPage(uid));
-  let neighbors = await getNeighborIds(uid, edgeLimit);
+async function getNode(href, edgeLimit) {
+  let node = deserialize(await getPage(href));
+  let neighbors = await getNeighborIds(href, edgeLimit);
   neighbors.forEach(row => node.addEdge(row.to_node));
   return node;
-}
+};
 
 async function getAllNodes(limit) {
   let pages = await getAllPages(limit);
@@ -25,6 +43,12 @@ async function getAllNodes(limit) {
 
 async function getNodes(uids) {
   return Promise.all(uids.map(async uid => await getNode(uid)));
+}
+
+async function getMultiDegreeNodes(degrees, limit, select) {
+  let test = await query(Queries.getMultiDegreeNodes(degrees, limit, select));
+  return Promise.all(await query(
+    await Queries.getMultiDegreeNodes(degrees, limit, select)))
 }
 
 async function getAllPages(limit) {
@@ -48,11 +72,15 @@ async function addEdge(uidFrom, uidTo) {
   await query(Inserts.addEdge(uidFrom, uidTo));
 }
 
-async function getPage(uid) {
-  let results = await query(Queries.getPage(uid));
+async function getPage(href) {
+  let results = await query(Queries.getPage(href));
   if (results.length < 1)
-    return Promise.reject(new Error('Page not found with uid ' + uid));
+    return Promise.reject(new Error('Page not found with href ' + href));
   return Promise.resolve(results[0]);
+}
+
+async function getPages(degrees, limit) {
+  return await query(Queries.getMultiDegreeNodes(degrees, limit));
 }
 
 async function getUnscraped(limit) {
@@ -85,26 +113,26 @@ async function removePage(uid) {
 
 function serialize(node) {
   return {
-    uid: node.uid,
-    type: node.data.type,
-    title: node.data.title,
-    href: node.data.href,
-    scraped: !node.data.endNode,
-    description: node.data.description
+    type: node.type,
+    title: node.title,
+    href: node.href,
+    scraped: !node.endNode,
+    description: node.description
   }
 }
 
 function deserialize(node) {
-  return new Node(node.uid, {
-    type: node.type,
-    title: node.title,
-    href: node.href,
-    endNode: !node.scraped,
-    description: node.description
-  })
+  return new Node(
+    node.href,
+    node.type,
+    node.title,
+    node.endNode,
+    node.description
+  )
 }
 
 module.exports = {
+  init,
   getNode,
   getNodes,
   addPage,
@@ -121,5 +149,6 @@ module.exports = {
   getConnectionStats,
   removeAllReferences,
   serialize,
-  deserialize
+  deserialize,
+  getMultiDegreeNodes
 };

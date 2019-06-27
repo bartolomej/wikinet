@@ -1,11 +1,12 @@
 const DB = require('../src/db/GraphDb');
 const ScrapeService = require('../src/services/ScrapeService');
-const DbFactory = require('../src/db/DbFactory');
+const GraphDb = require('../src/db/GraphDb');
 const dbConfig = require('../config').db;
 require('colors');
 const colors = require('colors/safe');
 
-const init = () => DbFactory.init(dbConfig);
+
+const init = () => GraphDb.init(dbConfig);
 
 module.exports.listPages = async function (limit) {
   init();
@@ -37,4 +38,14 @@ module.exports.scrape = async function (limit) {
     let progress = (100 * currentPage) / limit;
     console.log(`Progress ${progress}%`.green);
   });
+};
+
+module.exports.scrapePage = async function (href) {
+  init();
+  await ScrapeService.scrapePage(href);
+};
+
+module.exports.scrapeFromInitial = async function (href) {
+  init();
+  await ScrapeService.scrapeFrom(href);
 };

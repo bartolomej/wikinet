@@ -1,6 +1,13 @@
 const GraphService = require('../src/services/GraphService');
+const GraphDb = require('../src/db/GraphDb');
+const config = require('../config').db;
 
-test('construct graph', async () => {
-  let graph = await GraphService.twoDegreeGraph(100);
-  expect(graph).toEqual();
+describe('Graph service tests', function () {
+
+  it('should compute caches', async () => {
+    GraphDb.init(config);
+    let cache = await GraphService.computeCache(1, 10);
+
+    expect(cache).toEqual()
+  });
 });

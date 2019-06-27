@@ -1,11 +1,17 @@
 const DbRepo = require('../src/db/GraphDb');
-const DbFactory = require('../src/db/DbFactory');
-const uid = require('uuid');
+
+const testConfig = {
+  host     : 'localhost',
+  user     : 'root',
+  password : 'rootPass',
+  database : 'wiki'
+};
 
 
 describe('Graph database updates and queries', function () {
 
   it('should insert new page', async () => {
+    DbRepo.init(testConfig);
     const firstPage = {
       uid: '1111111',
       data: {
@@ -38,7 +44,7 @@ describe('Graph database updates and queries', function () {
 describe('Graph database queries on test data', function () {
 
   it('should return initial node edges', async () => {
-    DbFactory.init('wiki_test');
+    DbRepo.init('wiki_test');
     let edges = await DbRepo.getNeighborIds('1');
     expect(edges).toEqual([
       {to_node: '2'},
@@ -51,7 +57,7 @@ describe('Graph database queries on test data', function () {
   });
 
   it('should return initial node', async () => {
-    DbFactory.init('wiki_test');
+    DbRepo.init('wiki_test');
     let node = await DbRepo.getNode('1');
     expect(node).toEqual({
       uid: '1',
@@ -74,13 +80,13 @@ describe('Graph database queries on test data', function () {
   });
 
   it('should return empty neighbors', async () => {
-    DbFactory.init('wiki_test');
+    DbRepo.init('wiki_test');
     let edges = await DbRepo.getNeighborIds('10');
     expect(edges).toEqual([])
   });
 
   it('should return 2 nodes', async () => {
-    DbFactory.init('wiki_test');
+    DbRepo.init('wiki_test');
     let nodes = await DbRepo.getAllNodes(2);
     expect(nodes).toEqual([
       {
@@ -109,7 +115,7 @@ describe('Graph database queries on test data', function () {
   });
 
   it('should return 2 nodes by uids', async () => {
-    DbFactory.init('wiki_test');
+    DbRepo.init('wiki_test');
     let nodes = await DbRepo.getNodes(['1', '10']);
     expect(nodes).toEqual([
       {
@@ -137,25 +143,32 @@ describe('Graph database queries on test data', function () {
     ])
   });
 
+  it('should return 2 degree graph connections', async () => {
+    DbRepo.init(testConfig);
+    let graph = await DbRepo.getMultiDegreeNodes(4, 10, 'title');
+
+    expect(graph).toEqual()
+  });
+
 });
 
 
 describe('Graph queries on real data', function () {
 
   it('should get initial page', async () => {
-    DbFactory.init('wiki');
+    DbRepo.init('wiki');
     let node = await DbRepo.getNode('1', 100);
     expect(node).toEqual([]);
   });
 
   it('should get nodes with limit', async () => {
-    DbFactory.init('wiki');
+    DbRepo.init('wiki');
     let nodes = await DbRepo.getAllNodes(100);
     expect(nodes).toEqual([]);
   });
 
   it('should construct first degree graph starting from initial node', async () => {
-    DbFactory.init('wiki');
+    DbRepo.init('wiki');
     let initialNode = await DbRepo.getNode('1', 100);
     let neighbors = await DbRepo.getNodes(initialNode.edges);
     expect(neighbors).toEqual();

@@ -65,9 +65,13 @@
 </div>
 <script>
 
-    window.onload = function () {
-
-    };
+    (function () {
+        const GAME_THEORY = 'https://en.wikipedia.org/wiki/Game_theory';
+        const CITY = 'https://en.wikipedia.org/wiki/City';
+        const CATEGORY_OF_PHILOSOPHY = 'https://en.wikipedia.org/wiki/Philosophy';
+        const APPLE = 'https://sl.wikipedia.org/wiki/Apple_Inc.';
+        init(50, CITY)
+    })();
 
     let s = new sigma(
             {
@@ -83,28 +87,28 @@
       edges: []
     };
 
-    (async function () {
-        let nodesRes = await getGraph(220);
+    async function init(limit, href) {
+        let nodesRes = await getGraph(limit, href);
 
         nodesRes.forEach(node => {
-          g.nodes.push({
-              id: node.uid,
-              label: node.data.title,
-              x: Math.random(),
-              y: Math.random(),
-              size: Math.random(),
-              color: '#666'
-          });
-
-          node.edges.forEach(edge => {
-            g.edges.push({
-                id: `${node.uid}_${edge}`,
-                source: node.uid,
-                target: edge,
+            g.nodes.push({
+                id: node.href,
+                label: node.title,
+                x: Math.random(),
+                y: Math.random(),
                 size: Math.random(),
-                color: '#ccc'
+                color: '#666'
             });
-          });
+
+            node.edges.forEach(edge => {
+                g.edges.push({
+                    id: `${node.href}_${edge}`,
+                    source: node.href,
+                    target: edge,
+                    size: Math.random(),
+                    color: '#ccc'
+                });
+            });
         });
 
         // load the graph
@@ -112,12 +116,17 @@
         sigma.plugins.relativeSize(s, 1);
         s.refresh();
         s.startForceAtlas2();
-        window.setTimeout(function() {s.killForceAtlas2()}, 5000);
-    })();
+        window.setTimeout(function() {s.killForceAtlas2()}, 8000);
 
-    async function getGraph(limit) {
+        s.bind('clickNode', function(e) {
+          console.log(e);
+          window.open(e.data.node.id);
+        })
+    }
+
+    async function getGraph(limit, initialNode) {
         return new Promise((resolve, reject) => {
-            fetch(`http://localhost:3000/api/graph?limit=${limit}`)
+            fetch(`http://localhost:3000/api/graph?limit=${limit}&node=${initialNode}`)
                     .then(res => {
                         return resolve(res.json())
                     })

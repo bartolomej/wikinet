@@ -17,7 +17,7 @@ router.get('/node/:uid', async (req, res, next) => {
 });
 
 router.get('/graph', async (req, res, next) => {
-  res.json(await GraphService.twoDegreeGraph(req.query.limit))
+  res.json(await GraphService.twoDegreeGraph(req.query.node, req.query.limit))
 });
 
 module.exports = router;

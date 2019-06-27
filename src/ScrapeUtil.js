@@ -32,6 +32,8 @@ module.exports.formatTitle = (title) => {
 };
 
 module.exports.formatLink = link => {
+  if (!(/^https/.test(link)))
+    link = 'https://en.wikipedia.org' + link;
   return link;
 };
 
