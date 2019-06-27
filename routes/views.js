@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const GraphDb = require('../src/db/GraphDb');
 
-router.get('/', (req, res, next) => {
-  res.render('index');
+router.get('/', async (req, res, next) => {
+  let nodes = await GraphDb.getHighlyScrapedNodes();
+  res.render('index', {nodes});
 });
 
 router.get('/demo', (req, res, next) => {

@@ -91,6 +91,10 @@ async function getConnectionStats() {
   return await query(Queries.getConnectionsStats());
 }
 
+async function getHighlyScrapedNodes() {
+  return await query(Queries.getHighlyConnectedNodes());
+}
+
 async function getNeighbors(uid) {
   return await query(Queries.getNeighbors(uid));
 }
@@ -148,6 +152,7 @@ module.exports = {
   removeAllPages,
   getConnectionStats,
   removeAllReferences,
+  getHighlyScrapedNodes,
   serialize,
   deserialize,
   getMultiDegreeNodes

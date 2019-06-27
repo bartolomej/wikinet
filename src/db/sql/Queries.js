@@ -106,6 +106,17 @@ module.exports.getMultiDegreeNodes = (degrees, limit = undefined, select = 'href
   return query;
 };
 
-module.exports.getHighlyConnectedNodes = function (fromNode, limit) {
-
+module.exports.getHighlyConnectedNodes = function () {
+  return (
+    `SELECT DISTINCT p1.href, p1.title
+    FROM page p1
+    INNER JOIN reference r1
+    ON p1.href = r1.from_node
+    INNER JOIN page p2
+    ON p2.href = r1.to_node
+    INNER JOIN reference r2
+    ON p2.href = r2.from_node
+    INNER JOIN page p3
+    ON r2.to_node = p3.href`
+  )
 };
