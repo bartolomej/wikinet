@@ -11,31 +11,39 @@
     <title>Hello, world!</title>
 </head>
 <body>
-<div style="width: 30%; margin-left: auto; margin-right: auto">
-    <form method="GET" action="/graph">
-        <div class="form-group" >
-            <label for="exampleInputEmail1">Wikipedia link</label>
-            <input name="link" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter website link">
-        </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1">Node limit</label>
-            <input name="limit" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter connection limits">
-        </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1">Render time</label>
-            <input name="render_time" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter render limit (400 - 7000)">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+<div>
+    <div style="width: 900px; margin-left: auto; margin-right: auto">
 
-    <div style="margin: 10%">
-        <h5>Pages with 3 degree connections</h5>
-        <ol>
-            {{#each nodes}}
-                <li><a href="{{href}}">{{title}}</a><p>{{href}}</p></li>
-            {{/each}}
-        </ol>
+        <div>
+            <form method="GET" action="/graph" style="float:left;">
+                <div class="form-group" >
+                    <label for="exampleInputEmail1">Wikipedia link</label>
+                    <input name="link" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter website link">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Node limit</label>
+                    <input name="limit" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter connection limits">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Render time</label>
+                    <input name="render_time" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter render limit (400 - 7000)">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+
+        <div style="float: right;">
+            <h5>Pages with 3 degree connections</h5>
+            <ol>
+                {{#each nodes}}
+                    <li><a href="{{href}}">{{title}}</a><p>{{href}}</p></li>
+                {{/each}}
+            </ol>
+        </div>
+
     </div>
+
 </div>
 
 <!-- Optional JavaScript -->

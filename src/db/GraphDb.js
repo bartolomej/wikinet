@@ -29,7 +29,7 @@ async function getNode(href, edgeLimit) {
   let neighbors = await getNeighborIds(href, edgeLimit);
   neighbors.forEach(row => node.addEdge(row.to_node));
   return node;
-};
+}
 
 async function getAllNodes(limit) {
   let pages = await getAllPages(limit);
@@ -87,8 +87,12 @@ async function getUnscraped(limit) {
   return await query(Queries.getUnscrapedPages(limit));
 }
 
-async function getConnectionStats() {
-  return await query(Queries.getConnectionsStats());
+async function getConnectionStats(link, type, limit) {
+  if (type === 'from') {
+    return await query(Queries.getConnectionsFrom(link, limit));
+  } else if (type === 'to') {
+    return await query(Queries.getConnectionsTo(link, limit));
+  }
 }
 
 async function getHighlyScrapedNodes() {

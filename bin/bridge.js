@@ -14,6 +14,7 @@ module.exports.listPages = async function (limit) {
   pages.forEach(page => {
     console.log(colors.bold(page.title))
   });
+  return Promise.resolve();
 };
 
 module.exports.listUnscraped = async function (limit) {
@@ -22,30 +23,41 @@ module.exports.listUnscraped = async function (limit) {
   pages.forEach(page => {
     console.log(colors.bold(page.title))
   });
+  return Promise.resolve();
 };
 
-module.exports.connectionStats = async function () {
+module.exports.connectionStats = async function (fromOrTo, limit, link) {
   init();
-  let stats = await DB.getConnectionStats();
+  let stats = await DB.getConnectionStats(link, fromOrTo, limit);
   stats.forEach(stat => {
     console.log(colors.red(stat.title), stat.connections)
-  })
+  });
+  return Promise.resolve();
 };
 
-module.exports.scrape = async function (limit) {
+module.exports.scrapeAll = async function (limit) {
   init();
   await ScrapeService.scrapeAll(limit, (currentPage, uid) => {
     let progress = (100 * currentPage) / limit;
     console.log(`Progress ${progress}%`.green);
   });
+  return Promise.resolve();
 };
 
 module.exports.scrapePage = async function (href) {
   init();
   await ScrapeService.scrapePage(href);
+  return Promise.resolve();
 };
 
-module.exports.scrapeFromInitial = async function (href) {
+module.exports.breadhFirstScrape = async function (href, degrees) {
   init();
-  await ScrapeService.scrapeFrom(href);
+  await ScrapeService.scrapeFrom(href, degrees);
+  return Promise.resolve();
+};
+
+module.exports.depthFirstScrape = async function (href, degrees) {
+  init();
+  await ScrapeService.depthFirstScrape(href, degrees);
+  return Promise.resolve();
 };

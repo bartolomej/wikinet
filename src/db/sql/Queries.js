@@ -26,13 +26,27 @@ module.exports.getUnscrapedPages = (limit) => {
 };
 */
 
-module.exports.getConnectionsStats = () => {
+module.exports.getConnectionsFrom = (link, limit) => {
   return (
     `SELECT p.title, count(r.from_node) as connections 
     FROM page p
     INNER JOIN reference r 
     ON r.from_node = p.href
-    GROUP BY from_node`
+    ${link === undefined ? '' : `WHERE r.from_node = '${link}'`}
+    GROUP BY from_node
+    ${limit === undefined ? '' : `LIMIT ${limit}`}`
+  )
+};
+
+module.exports.getConnectionsTo = (link, limit) => {
+  return (
+    `SELECT p.title, count(r.to_node) as connections 
+    FROM page p
+    INNER JOIN reference r 
+    ON r.to_node = p.href
+    ${link === undefined ? '' : `WHERE r.to_node = '${link}'`}
+    GROUP BY to_node
+    ${limit === undefined ? '' : `LIMIT ${limit}`}`
   )
 };
 

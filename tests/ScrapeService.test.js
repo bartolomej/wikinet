@@ -18,7 +18,7 @@ describe('Scrape service tests', function () {
     expect(extracted2.links.length).toEqual(1056);
   });
 
-  it('should scrape initial page twice', async () => {
+  it('should scrapeAll initial page twice', async () => {
     await WikiScraper.scrape('1');
   });
 

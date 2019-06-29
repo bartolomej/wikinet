@@ -4,6 +4,7 @@ const GraphDb = require('../src/db/GraphDb');
 
 router.get('/', async (req, res, next) => {
   let nodes = await GraphDb.getHighlyScrapedNodes();
+  // compute cache
   res.render('index', {nodes});
 });
 

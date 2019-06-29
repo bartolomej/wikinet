@@ -37,30 +37,15 @@ module.exports.twoDegreeGraph = async function (initialNodeHref, limit) {
   return graph;
 };
 
-module.exports.twoDegreeGraphWithConfig = async function (config) {
-  const nodes = config.nodes;
-  const limit = config.limit;
-
+module.exports.twoDegreeGraphWithConfig = async function (initialNode, degrees) {
   let graph = [];
 
-  graph.push(initialNode);
+  async function createGraph(nodeHref, nodes = [], degree) {
+    if (degree <= 1) return nodes;
+    let node = await GraphDB.getNode(nodeHref);
+    nodes.push(node);
+    node.edges.forEach(nodes.push);
 
-  for (let i = 0; i < initialNode.edges.length; i++) {
-    let firstNode = await GraphDB.getNode(initialNode.edges[i], limit);
-    graph.push(firstNode);
-    for (let j = 0; j < firstNode.edges.length; j++) {
-      let secNode = await GraphDB.getNode(firstNode.edges[j], limit);
-      graph.push(secNode);
-      for (let z = 0; z < secNode.edges.length; z++) {
-        let thirdNode = await GraphDB.getNode(secNode.edges[z], limit);
-        graph.push(thirdNode);
-        for (let g = 0; g < thirdNode.edges.length; g++) {
-          let forthNode = await GraphDB.getNode(thirdNode.edges[g], limit);
-          firstNode.edges = [];
-          graph.push(forthNode);
-        }
-      }
-    }
   }
 
   return graph;

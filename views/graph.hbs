@@ -47,9 +47,9 @@
 <script src="sigma/misc/sigma.misc.drawHovers.js"></script>
 
 <!-- Sigma plugins -->
-<script src="https://cdn.jsdelivr.net/npm/sigma@1.2.1/plugins/sigma.layout.forceAtlas2/supervisor.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sigma@1.2.1/plugins/sigma.layout.forceAtlas2/worker.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sigma@1.2.1/plugins/sigma.plugins.relativeSize/sigma.plugins.relativeSize.js"></script>
+<script src="sigma/plugins/supervisor.js"></script>
+<script src="sigma/plugins/worker.js"></script>
+<script src="sigma/plugins/relativeSize.js"></script>
 <!-- END SIGMA IMPORTS -->
 <div id="container">
     <style>
@@ -90,6 +90,10 @@
     async function init(limit, href) {
         let nodesRes = await getGraph(limit, href);
 
+        console.log('degrees: ', 3);
+        console.log('edge_limit: ', limit);
+        console.log('total nodes: ', nodesRes.length);
+
         nodesRes.forEach(node => {
             g.nodes.push({
                 id: node.href,
@@ -97,7 +101,7 @@
                 x: Math.random(),
                 y: Math.random(),
                 size: Math.random(),
-                color: '#666'
+                color: '#c4c4cc'
             });
 
             node.edges.forEach(edge => {
