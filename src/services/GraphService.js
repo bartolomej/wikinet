@@ -37,20 +37,6 @@ module.exports.twoDegreeGraph = async function (initialNodeHref, limit) {
   return graph;
 };
 
-module.exports.twoDegreeGraphWithConfig = async function (initialNode, degrees) {
-  let graph = [];
-
-  async function createGraph(nodeHref, nodes = [], degree) {
-    if (degree <= 1) return nodes;
-    let node = await GraphDB.getNode(nodeHref);
-    nodes.push(node);
-    node.edges.forEach(nodes.push);
-
-  }
-
-  return graph;
-};
-
 module.exports.graph = async function (initialNodeUid, degreeLimit, nodeLimit) {
   let graph = [];
   let initial = await GraphDB.getNode(initialNodeUid, nodeLimit);
@@ -66,7 +52,15 @@ module.exports.graph = async function (initialNodeUid, degreeLimit, nodeLimit) {
   }
 };
 
-module.exports.computeCache = async function (degrees, limit) {
-  let nodes = await GraphDB.getMultiDegreeNodes(degrees, limit, 'uid');
-  return nodes;
+module.exports.getHighlyConnected = async function () {
+  if (!await CacheDb.exists('connected_pages.cache')) {
+    let nodes = await GraphDB.getHighlyScrapedNodes();
+    await CacheDb.write('connected_pages.cache', nodes);
+  }
+  return await CacheDb.read('connected_pages.cache');
+};
+
+module.exports.computeHighlyConnected = async function () {
+  let nodes = await GraphDB.getHighlyScrapedNodes();
+  await CacheDb.write('connected_pages.cache', nodes);
 };

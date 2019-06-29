@@ -1,20 +1,25 @@
+const fsp = require('fs').promises;
 const fs = require('fs');
+const p = require('path');
 
 
-module.exports.write = function (fileName, data) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(path(fileName), JSON.stringify(data, null, 4), err => {
-      resolve(err)
-    })
+module.exports.exists = async function (fileName) {
+  return await fs.existsSync(path(fileName));
+};
+
+module.exports.write = async function (fileName, data) {
+  await fsp.writeFile(path(fileName), JSON.stringify(data, null, 4));
+};
+
+module.exports.read = async function (fileName) {
+  let data = await fsp.readFile(path(fileName), 'utf8');
+  return JSON.parse(data);
+};
+
+module.exports.remove = async function (fileName) {
+  await fs.unlink(path(fileName), err => {
+    if (err) return Promise.reject(err);
   });
 };
 
-module.exports.read = function (fileName) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path(fileName), {encoding: 'utf-8'}, (err, data) => (
-      err ? reject(err) : resolve(JSON.parse(data))
-    ));
-  });
-};
-
-const path = fileName => __dirname + '/../cache/' + fileName + '.json';
+const path = fileName => p.join(__dirname, '/../../cache/', fileName + '.json');

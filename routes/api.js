@@ -20,4 +20,8 @@ router.get('/graph', async (req, res, next) => {
   res.json(await GraphService.twoDegreeGraph(req.query.node, req.query.limit))
 });
 
+router.get('/rich', async (req, res, next) => {
+  res.json(await GraphService.getHighlyConnected(req.query.node, req.query.limit))
+});
+
 module.exports = router;

@@ -18,6 +18,7 @@ module.exports.getType = (title) => {
   if (/^.*book/.test(title)) return 'book';
   if (/^.*Talk:/.test(title)) return 'talk';
   if (/^.*File:/.test(title)) return 'file';
+  if (/^.*Template:/.test(title)) return 'template';
   if (/^.*Wikipedia:/.test(title)) return 'wiki_article';
   else return 'article';
 };

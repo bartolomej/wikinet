@@ -3,6 +3,7 @@ const $ = require('cheerio');
 const repo = require('../db/GraphDb');
 const ScrapeUtil = require('../ScrapeUtil');
 const colors = require('colors/safe');
+const GraphService = require('./GraphService');
 
 
 async function scrapeAll(limit, infoCallback) {
@@ -19,6 +20,7 @@ async function scrapeAll(limit, infoCallback) {
       console.log(e.message);
     }
   }
+  await cache();
 }
 
 async function depthFirstScrape(initialHref, degrees = 10) {
@@ -31,10 +33,9 @@ async function depthFirstScrape(initialHref, degrees = 10) {
     try {
       await scrapePage(page.edges[index]);
       await depthFirstScrape(page.edges[index], degrees-1);
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
+  await cache();
 }
 
 async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
@@ -51,8 +52,8 @@ async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
       console.log('cannot be scraped: ' + page.edges[i]);
       console.log(e);
     }
-
   }
+  await cache();
 }
 
 async function scrapePage(href) {
@@ -127,6 +128,10 @@ function extractText(html) {
       return parseText(nodes, data, ++counter)
     }
   }
+}
+
+async function cache() {
+  await GraphService.computeHighlyConnected();
 }
 
 module.exports = {

@@ -10,8 +10,9 @@ program.on('--help', function() {
   console.log('');
   console.log('Examples:');
   console.log('');
-  console.log('  node bin/cli.js scrape --link https://en.wikipedia.org/wiki/God');
-  console.log('  node bin/cli.js breadh-first-scrape --initial https://en.wikipedia.org/wiki/God');
+  console.log('  node bin/cli.js scrape --link <wiki-link>');
+  console.log('  node bin/cli.js depth-first-scrape --initial <wiki-link> --depth <num>');
+  console.log('  node bin/cli.js breadh-first-scrape --initial <wiki-link>');
   console.log('  node bin/cli.js pages --limit 100 --unscraped');
 });
 
