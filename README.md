@@ -2,13 +2,13 @@
 Graph construction and visualization of wikipedia knowledge interconnectedness.
 
 ![ims](https://i.ibb.co/rGtCcyZ/Screenshot-2019-06-29-at-13-05-07.png)
-All direct connections to pages on Artificial Intelligence wiki (1600 links to pages)
+<br>All direct connections to pages on Artificial Intelligence wiki (1600 links to pages)
 
 ![ims](https://i.ibb.co/R6m01DL/Screenshot-2019-06-29-at-13-32-11.png)
-Limited 3 degree network with max 200 connections per page originating from Artificial Intelligence wiki (18.000 pages total)
+<br>Limited 3 degree network with max 200 connections per page originating from Artificial Intelligence wiki (18.000 pages total)
 
 ![ims](https://i.ibb.co/phqy7bp/Screenshot-2019-06-29-at-14-23-40.png)
-Limited 3 degree network with max 420 connections per page originating from Artificial Intelligence wiki (40.000 pages total)
+<br>Limited 3 degree network with max 420 connections per page originating from Artificial Intelligence wiki (40.000 pages total)
 
 ### Available Scripts
 
