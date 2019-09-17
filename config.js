@@ -3,6 +3,6 @@ module.exports = {
     host     : 'localhost',
     user     : 'root',
     password : 'rootPass',
-    database : 'wiki_test_2'
+    database : 'wiki'
   }
 };

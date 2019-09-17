@@ -6,8 +6,13 @@ const Delete = require('./sql/Delete');
 const mysql = require('mysql');
 let connection;
 
-function init(dbConfig) {
-  connection = mysql.createConnection(dbConfig);
+function init(host, user, password, database) {
+  connection = mysql.createConnection({
+    host,
+    user,
+    password,
+    database
+  });
   connection.connect();
 }
 
@@ -74,8 +79,9 @@ async function addEdge(uidFrom, uidTo) {
 
 async function getPage(href) {
   let results = await query(Queries.getPage(href));
-  if (results.length < 1)
+  if (results.length < 1) {
     return Promise.reject(new Error('Page not found with href ' + href));
+  }
   return Promise.resolve(results[0]);
 }
 

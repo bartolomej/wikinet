@@ -1,12 +1,18 @@
-const DB = require('../src/db/GraphDb');
-const ScrapeService = require('../src/services/ScrapeService');
-const GraphDb = require('../src/db/GraphDb');
-const dbConfig = require('../config').db;
+const DB = require('../db/graph');
+const ScrapeService = require('../services/scrape');
+const GraphDb = require('../db/graph');
+const path = require('path');
+require('dotenv').config({path: path.join(__dirname, '..', '..', '.env')});
 require('colors');
 const colors = require('colors/safe');
 
 
-const init = () => GraphDb.init(dbConfig);
+const init = () => GraphDb.init(
+  process.env.DB_HOST,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  process.env.DB_NAME
+);
 
 module.exports.listPages = async function (limit) {
   init();

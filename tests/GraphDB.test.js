@@ -1,4 +1,4 @@
-const DbRepo = require('../src/db/GraphDb');
+const DbRepo = require('../src/db/graph');
 
 const testConfig = {
   host     : 'localhost',

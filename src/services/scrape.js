@@ -1,9 +1,9 @@
-const request = require('../ScrapeUtil').request;
+const request = require('../utils').request;
 const $ = require('cheerio');
-const repo = require('../db/GraphDb');
-const ScrapeUtil = require('../ScrapeUtil');
+const repo = require('../db/graph');
+const ScrapeUtil = require('../utils');
 const colors = require('colors/safe');
-const GraphService = require('./GraphService');
+const GraphService = require('./graph');
 
 
 async function scrapeAll(limit, infoCallback) {
@@ -61,7 +61,8 @@ async function scrapePage(href) {
   try {
     html = await request(href);
   } catch (e) {
-    return Promise.resolve();
+    console.log(e);
+    return;
   }
   let {links, title, type} = extractDetails(html);
 
@@ -71,7 +72,8 @@ async function scrapePage(href) {
       scraped: false, description: ''
     });
   } catch (e) {
-    console.log(`Page exists ${href}`)
+    console.log(`Page exists ${href}`);
+    console.log(e);
   }
 
   for (let i = 0; i < links.length; i++) {
@@ -82,10 +84,10 @@ async function scrapePage(href) {
         href: links[i].href,
         scraped: false, description: ''
       });
-      console.log('adding link: ' + links[i].href);
       await repo.addEdge(href, links[i].href);
+      console.log('added link: ' + links[i].href);
     } catch (e) {
-      // DOUBLE_ENTRY ERROR
+      // do not log: double db entry error
     }
   }
   return Promise.resolve(links);

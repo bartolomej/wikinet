@@ -27,7 +27,7 @@ List of available command tools and commands<br>
 
 ##### `node bin/cli scrape --link <wiki-link>`
 
-Scrapes all the connections to other pages from page <wiki-link><br>
+Start with this command. Scrapes all the connections to other pages from page <wiki-link><br>
 
 
 ##### `node bin/cli bfs --initial <wiki-link>`

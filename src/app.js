@@ -3,25 +3,32 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const GraphDb = require('./src/db/GraphDb');
-const dbConfig = require('./config').db;
-
+const GraphDb = require('./db/graph');
+require('dotenv').config({path: path.join(__dirname, '..', '.env')});
+console.log(path.join(__dirname, '..', '.env'))
 const indexRouter = require('./routes/views');
 const usersRouter = require('./routes/api');
 
 const app = express();
 
-GraphDb.init(dbConfig);
+// TODO: abstract config to environment
+// TODO: fire initialization bash script
+GraphDb.init(
+  process.env.DB_HOST,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  process.env.DB_NAME
+);
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(cookieParser());
+app.use('/public', express.static('public', {extensions: ['js', 'html', 'css']}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api', usersRouter);

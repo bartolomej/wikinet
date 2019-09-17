@@ -1,4 +1,4 @@
-USE wiki_test_2;
+USE wiki;
 
 CREATE TABLE page (
     href varchar(300) primary key,

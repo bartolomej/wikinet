@@ -2,7 +2,7 @@
 
 const program = require('commander');
 const display = require('./bridge');
-const version = require('../package.json').version;
+const version = require('../../package.json').version;
 
 program.version(version);
 

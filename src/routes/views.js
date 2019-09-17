@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const GraphDb = require('../src/db/GraphDb');
-const GraphService = require('../src/services/GraphService');
+const GraphDb = require('../db/graph');
+const GraphService = require('../services/graph');
 
 router.get('/', async (req, res, next) => {
   let nodes = await GraphService.getHighlyConnected();
@@ -12,12 +12,22 @@ router.get('/demo', (req, res, next) => {
   res.render('demo', { title: 'Express' });
 });
 
-router.get('/graph', (req, res, next) => {
+router.get('/graph/2d', (req, res, next) => {
   let renderTime = req.query.render_time;
   let link = req.query.link;
   let limit = req.query.limit;
-  res.render('graph', {
+  res.render('2d-graph', {
     renderTime,
+    link,
+    limit
+  });
+});
+
+router.get('/graph/3d', (req, res, next) => {
+  let renderTime = req.query.render_time;
+  let link = req.query.link;
+  let limit = req.query.limit;
+  res.render('3d-graph', {
     link,
     limit
   });

@@ -1,4 +1,4 @@
-const WikiScraper = require('../src/services/ScrapeService');
+const WikiScraper = require('../src/services/scrape');
 const {read, request} = require('./TestUtils');
 const path = require('path');
 

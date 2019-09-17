@@ -1,7 +1,6 @@
 const Graph = require('../models/Graph');
 const Node = require('../models/Node');
-const GraphDB = require('../db/GraphDb');
-const CacheDb = require('../db/FileDb');
+const GraphDB = require('../db/graph');
 
 
 module.exports.twoDegreeGraph = async function (initialNodeHref, limit) {
@@ -53,14 +52,5 @@ module.exports.graph = async function (initialNodeUid, degreeLimit, nodeLimit) {
 };
 
 module.exports.getHighlyConnected = async function () {
-  if (!await CacheDb.exists('connected_pages.cache')) {
-    let nodes = await GraphDB.getHighlyScrapedNodes();
-    await CacheDb.write('connected_pages.cache', nodes);
-  }
-  return await CacheDb.read('connected_pages.cache');
-};
-
-module.exports.computeHighlyConnected = async function () {
-  let nodes = await GraphDB.getHighlyScrapedNodes();
-  await CacheDb.write('connected_pages.cache', nodes);
+  return await GraphDB.getHighlyScrapedNodes();
 };

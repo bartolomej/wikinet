@@ -1,0 +1,75 @@
+<head>
+    <style> body { margin: 0; } </style>
+    <script src="/public/3d-force-graph.min.js"></script>
+</head>
+
+<body>
+<div id="3d-graph"></div>
+
+<script>
+
+    init({{limit}}, {{href}});
+
+    const graph = {
+        nodes: [],
+        links: []
+    };
+
+    async function init(limit, href) {
+        let nodesRes = await getGraph(limit, href);
+
+        console.log('degrees: ', 3);
+        console.log('edge_limit: ', limit);
+        console.log('total nodes: ', nodesRes.length);
+
+        const elem = document.getElementById("3d-graph");
+        const Graph = ForceGraph3D()(elem)
+                .enableNodeDrag(true)
+                .onNodeHover(onHover)
+                .onNodeClick(onClick)
+                .graphData(graph);
+
+        nodesRes.forEach(node => {
+            const {links, nodes} = Graph.graphData();
+            Graph.graphData({
+                nodes: [...nodes, {
+                    id: node.href,
+                    label: node.title,
+                }],
+                links
+            });
+
+            node.edges.forEach(edge => {
+                const {links, nodes} = Graph.graphData();
+                Graph.graphData({
+                    links: [...links, {
+                        id: `${node.href}_${edge}`,
+                        source: node.href,
+                        target: edge,
+                    }],
+                    nodes
+                });
+            });
+        });
+    }
+
+    function onClick(node) {
+      console.log('click');
+        console.log(node)
+    }
+
+    function onHover(node) {
+      console.log('hover')
+        console.log(node)
+    }
+
+    async function getGraph(limit, initialNode) {
+        return new Promise((resolve, reject) => {
+            fetch(`/api/graph?limit=${limit}&node=${initialNode}`)
+                    .then(res => {
+                        return resolve(res.json())
+                    })
+        })
+    }
+</script>
+</body>

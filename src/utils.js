@@ -1,5 +1,5 @@
 const UUID = require('uuid-by-string');
-const requestPromise = require('request-promise');
+const fetch = require('node-fetch');
 
 String.prototype.splice = function(idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
@@ -7,9 +7,10 @@ String.prototype.splice = function(idx, rem, str) {
 
 module.exports.request = async function (url) {
   return new Promise((resolve, reject) => {
-    requestPromise(url)
-      .then(html => resolve(html))
-      .catch(err => reject(err))
+    fetch(url)
+      .then(url => url.text())
+      .then(body => resolve(body))
+      .catch(reject);
   })
 };
 
