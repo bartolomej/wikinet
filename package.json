@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "bin": "./bin/cli.js",
   "scripts": {
-    "start": "nodemon ./src/bin/www",
+    "start": "nodemon ./src/app.js",
     "init_test": "cd tests/db && sh init_db.sh && sh init_data.sh",
     "init_data": "cd tests/db && sh init_data.sh",
     "drop_test": "cd tests/db && sh purge_data.sh"
@@ -23,6 +23,7 @@
     "jest": "^24.8.0",
     "morgan": "~1.9.0",
     "mysql": "^2.17.1",
+    "neo4j-driver": "1.7.6",
     "node-fetch": "2.6.0",
     "request": "^2.88.0",
     "uuid-by-string": "^2.1.1"

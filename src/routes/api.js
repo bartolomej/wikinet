@@ -1,30 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const ScrapeService = require('../services/scrape');
-const GraphService = require('../services/graph');
-const store = require('../db/graph');
+const scrapeService = require('../scrapeService');
+const graphRepo = require('../repository');
+
 
 router.get('/page', async (req, res, next) => {
-  res.json(await store.getAllPages(req.query.limit));
+  //res.json(await store.getAllNodes(req.query.limit));
 });
 
-router.get('/node', async (req, res, next) => {
-  res.json(await store.getAllNodes(req.query.limit));
-});
-
-router.get('/node/:uid', async (req, res, next) => {
-  res.json(await store.getNode(req.params.uid));
+router.get('/page/:uid', async (req, res, next) => {
+  try {
+    res.json(await store.getNode(req.params.uid));
+  } catch (e) { next(e) }
 });
 
 router.get('/graph', async (req, res, next) => {
-  res.json(await GraphService.twoDegreeGraph(
-    req.query.node !== undefined ? req.query.node : null,
-    req.query.limit !== undefined ? req.query.limit : 300
-  ))
-});
-
-router.get('/rich', async (req, res, next) => {
-  res.json(await GraphService.getHighlyConnected(req.query.node, req.query.limit))
+  try {
+    res.json(await graphRepo.getGraph(
+      req.query.limit !== undefined ? req.query.limit : 300
+    ))
+  } catch (e) { next(e) }
 });
 
 module.exports = router;

@@ -38,3 +38,14 @@ Scrapes 3 degree graph from initial page <wiki-link> (breadh first scrape).<br>
 ##### `node bin/cli dbs --initial <wiki-link> --degrees <num>`
 
 Scrapes <num> degree graph from initial page <wiki-link> (depth first scrape).<br>
+
+
+### Environment variables
+```
+DB_HOST=localhost
+DB_PORT=7687
+DB_USER=neo4j
+DB_PASSWORD=wiki
+DB_NAME=wiki
+PORT=3000
+```

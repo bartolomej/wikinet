@@ -8,7 +8,7 @@
 
 <script>
 
-    init({{limit}}, {{href}});
+    init(500, 'https://en.wikipedia.org/wiki/Game_theory');
 
     const graph = {
         nodes: [],
@@ -59,8 +59,7 @@
     }
 
     function onHover(node) {
-      console.log('hover')
-        console.log(node)
+      console.log(node)
     }
 
     async function getGraph(limit, initialNode) {

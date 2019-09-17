@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const GraphDb = require('../db/graph');
-const GraphService = require('../services/graph');
+
 
 router.get('/', async (req, res, next) => {
-  let nodes = await GraphService.getHighlyConnected();
+  // TODO: return highly connected nodes
+  // let nodes = await GraphService.getHighlyConnected();
   res.render('index', {nodes});
 });
 

@@ -1,15 +1,13 @@
-const request = require('../utils').request;
+const request = require('./utils').request;
 const $ = require('cheerio');
-const repo = require('../db/graph');
-const ScrapeUtil = require('../utils');
+const repo = require('./repository');
+const ScrapeUtil = require('./utils');
+const WikiPage = require('./WikiPage');
 const colors = require('colors/safe');
-const GraphService = require('./graph');
 
 
 async function scrapeAll(limit, infoCallback) {
-  // TODO: add smarts (scrapeAll poorly connected pages,..)
-  let pages = await repo.getUnscraped(limit);
-
+  let pages = await repo.getNodesByDegrees(0);
   for (let i = 0; i < pages.length; i++) {
     let href = pages[i].href;
     console.log(`scraping: ${href}`);
@@ -20,11 +18,10 @@ async function scrapeAll(limit, infoCallback) {
       console.log(e.message);
     }
   }
-  await cache();
 }
 
 async function depthFirstScrape(initialHref, degrees = 10) {
-  let page = await repo.getNode(initialHref, degrees);
+  let page = await repo.getPage(initialHref, degrees);
   console.log('degree: ', degrees);
   if (degrees <= 1) return Promise.resolve();
   if (page.edges.length > 0) {
@@ -35,7 +32,6 @@ async function depthFirstScrape(initialHref, degrees = 10) {
       await depthFirstScrape(page.edges[index], degrees-1);
     } catch (e) {}
   }
-  await cache();
 }
 
 async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
@@ -53,44 +49,29 @@ async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
       console.log(e);
     }
   }
-  await cache();
 }
 
-async function scrapePage(href) {
-  let html;
-  try {
-    html = await request(href);
-  } catch (e) {
-    console.log(e);
-    return;
-  }
-  let {links, title, type} = extractDetails(html);
+async function scrapePage(pageUrl) {
+  let html = await request(pageUrl);
+  let pageDetails = extractDetails(html);
 
-  try {
-    await repo.addPage({
-      type, title, href,
-      scraped: false, description: ''
-    });
-  } catch (e) {
-    console.log(`Page exists ${href}`);
-    console.log(e);
+  let page = new WikiPage(
+    pageDetails.title,
+    pageDetails.type,
+    pageUrl
+  );
+
+  for (let i = 0; i < pageDetails.links.length; i++) {
+    page.connections = [...page.connections,
+      new WikiPage(
+        pageDetails.links[i].title,
+        pageDetails.links[i].type,
+        pageDetails.links[i].url
+      )
+    ];
   }
 
-  for (let i = 0; i < links.length; i++) {
-    try {
-      await repo.addPage({
-        type: links[i].type,
-        title: links[i].title,
-        href: links[i].href,
-        scraped: false, description: ''
-      });
-      await repo.addEdge(href, links[i].href);
-      console.log('added link: ' + links[i].href);
-    } catch (e) {
-      // do not log: double db entry error
-    }
-  }
-  return Promise.resolve(links);
+  return await repo.savePage(page);
 }
 
 function extractDetails(html) {
@@ -130,10 +111,6 @@ function extractText(html) {
       return parseText(nodes, data, ++counter)
     }
   }
-}
-
-async function cache() {
-  await GraphService.computeHighlyConnected();
 }
 
 module.exports = {
