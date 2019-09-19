@@ -25,19 +25,26 @@ program.on('--help', function() {
 });
 
 program
-  .command('list:single <id>')
+  .command('list:single <url>')
   .alias('ls')
-  .action(async (id) => {
-    let page = await graphRepo.getPage(id);
+  .action(async (url) => {
+    let page = await graphRepo.getPageByUrl(url);
     console.log(page);
     process.exit(1);
   });
 
 program
-  .command('list:multi <limit>')
+  .command('list:multi')
   .alias('lm')
+  .option("--limit <num>", 'Limit number of results')
   .action(async (limit) => {
-    console.log(limit);
+    let pages = await graphRepo.getPagesDegrees(20);
+    pages.forEach(page => {
+      console.log('PAGE: ', page.url);
+      console.log('CONNECTIONS: ', page.connections);
+      console.log('');
+    });
+    process.exit(1);
   });
 
 program

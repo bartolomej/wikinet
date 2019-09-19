@@ -58,10 +58,19 @@ module.exports.getPages = async (limit) => {
 };
 
 module.exports.getPage = async (id) => {
-  return deserialize(await session
+  return await session
     .run(`
       MATCH (n) 
       WHERE n.id = '${id}'
+      RETURN n
+    `);
+}
+
+module.exports.getPageByUrl = async (url) => {
+  return deserialize(await session
+    .run(`
+      MATCH (n) 
+      WHERE n.url = '${url}'
       RETURN n
     `));
 }
@@ -88,7 +97,7 @@ module.exports.getGraph = async (limit, id) => {
  * corresponding degrees
  */
 module.exports.getPagesDegrees = async (limit, asc = false) => {
-  return deserialize(await session
+  return deserializePagesWithDegrees(await session
     .run(`
        START n = node(*)
        MATCH (n)--(c)
@@ -125,6 +134,13 @@ module.exports.getByCustomQuery = async (query) => {
 
 function deserialize(pagesQuery) {
   return pagesQuery.records.map(ele => ele._fields[0].properties);
+}
+
+function deserializePagesWithDegrees(pagesQuery) {
+  return pagesQuery.records.map(ele => ({
+    ... ele._fields[0].properties,
+    connections: ele._fields[1].low
+  }));
 }
 
 function deserializeGraph(graphQuery) {

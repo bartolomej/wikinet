@@ -1,1 +1,0 @@
-cat ./data.sql | mysql --password=rootPass --user=root --host=localhost --database=wiki_test
