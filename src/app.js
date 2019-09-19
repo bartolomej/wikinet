@@ -4,8 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('dotenv').config({path: path.join(__dirname, '..', '.env')});
-const indexRouter = require('./routes/views');
-const usersRouter = require('./routes/api');
+const indexRouter = require('./api/views');
+const usersRouter = require('./api/rest');
 
 const app = express();
 

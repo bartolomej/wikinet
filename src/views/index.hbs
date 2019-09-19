@@ -1,55 +1,54 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="public/style.css">
+    <link rel="icon" href="public/landing.png">
 
-    <title>Hello, world!</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Wikipedia knowledge graph visualization.">
+    <meta name="author" content="Bartolomej Kozorog">
+
+    <title>Wikipedia network</title>
 </head>
 <body>
-<div>
-    <div style="width: 900px; margin-left: auto; margin-right: auto">
+<div id="main">
 
-        <div>
-            <form method="GET" action="/graph/3d" style="float:left;">
-                <div class="form-group" >
-                    <label for="exampleInputEmail1">Wikipedia link</label>
-                    <input name="link" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter website link">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Node limit</label>
-                    <input name="limit" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter connection limits">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Render time</label>
-                    <input name="render_time" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter render limit (400 - 7000)">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
+    <div id="form">
+        <h3>Try custom wikipedia page</h3>
+        <form method="GET" action="/graph">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Wikipedia url:</label>
+                <input name="link" type="text" id="exampleInputEmail1" placeholder="Enter website url">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 
 
-        <div style="float: right;">
-            <h5>Pages with 3 degree connections</h5>
-            <ol>
-                {{#each nodes}}
-                    <li><a href="{{href}}">{{title}}</a><p>{{href}}</p></li>
-                {{/each}}
-            </ol>
-        </div>
-
+    <div id="pages">
+        <h3>Existing pages</h3>
+        <ol>
+            {{#each nodes}}
+                <li><a href="/node?link={{url}}">{{title}}</a></li>
+            {{/each}}
+        </ol>
     </div>
 
 </div>
 
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 </body>
+<script src="public/three.r92.min.js"></script>
+<script src="public/vanta.net.min.js"></script>
+<script>
+    VANTA.NET({
+        el: "#main",
+        backgroundColor: 0x00011,
+        points: 8.00,
+        maxDistance: 25.00,
+        spacing: 25.00
+    });
+</script>
 </html>

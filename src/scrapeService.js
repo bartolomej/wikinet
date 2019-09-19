@@ -2,8 +2,7 @@ const request = require('./utils').request;
 const $ = require('cheerio');
 const repo = require('./repository');
 const ScrapeUtil = require('./utils');
-const WikiPage = require('./WikiPage');
-const colors = require('colors/safe');
+const WikiPage = require('./Page');
 
 
 async function scrapeAll(limit, infoCallback) {
@@ -20,33 +19,32 @@ async function scrapeAll(limit, infoCallback) {
   }
 }
 
-async function depthFirstScrape(initialHref, degrees = 10) {
-  let page = await repo.getPage(initialHref, degrees);
-  console.log('degree: ', degrees);
-  if (degrees <= 1) return Promise.resolve();
-  if (page.edges.length > 0) {
-    console.log('scraping page: ', page.edges[0]);
-    let index = Math.floor(Math.random()*page.edges.length-1);
-    try {
-      await scrapePage(page.edges[index]);
-      await depthFirstScrape(page.edges[index], degrees-1);
-    } catch (e) {}
+async function depthFirstScrape(initialUrl, degrees = 10) {
+  let neighbors = await repo.getPageNeighbors(initialUrl);
+  console.log(neighbors[0])
+  if (degrees <= 1) return;
+  if (neighbors.length > 0) {
+    for (let i = 0; i < neighbors.length; i++) {
+      try {
+        await scrapePage(neighbors[i].url);
+        console.log('SCRAPED PAGE: ', neighbors.edges[0].id);
+        await depthFirstScrape(neighbors[index].url, degrees-1);
+      } catch (e) {}
+    }
   }
 }
 
-async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
-  let page = await repo.getNode(initialHref, limit);
+async function breathFirstScrape(url, degrees, currentDegree = 0) {
+  let neighbors = await repo.getPageNeighbors(url);
 
   if (currentDegree >= degrees) return;
-  for (let i = 0; i < page.edges.length; i++) {
-    console.log(colors.green('edge: ' + page.edges[i]));
+  for (let i = 0; i < neighbors.length; i++) {
     try {
-      let {links} = await scrapePage(page.edges[i]);
-      console.log(colors.red('firstLink: ' + links[0] + ' degree: ' + currentDegree));
-      links.forEach(link => scrapeFrom(link, limit, degrees, currentDegree + 1));
+      let {links} = await scrapePage(neighbors[i].url);
+      console.log(`degree: ${currentDegree}, links: ${links.length}`);
+      links.forEach(link => breathFirstScrape(link, degrees, currentDegree+1));
     } catch (e) {
-      console.log('cannot be scraped: ' + page.edges[i]);
-      console.log(e);
+      console.log('SCRAPE ERROR: ', e.message);
     }
   }
 }
@@ -62,16 +60,20 @@ async function scrapePage(pageUrl) {
   );
 
   for (let i = 0; i < pageDetails.links.length; i++) {
-    page.connections = [...page.connections,
-      new WikiPage(
-        pageDetails.links[i].title,
-        pageDetails.links[i].type,
-        pageDetails.links[i].url
-      )
-    ];
+    let neighborPage = new WikiPage(
+      pageDetails.links[i].title,
+      pageDetails.links[i].type,
+      pageDetails.links[i].url
+    );
+    page.connections[neighborPage.id] = neighborPage;
   }
 
-  return await repo.savePage(page);
+  await repo.savePage(page);
+  console.log('SCRAPED ', pageDetails.links.length, ' PAGES');
+
+  return {
+    links: pageDetails.links,
+  }
 }
 
 function extractDetails(html) {
@@ -90,7 +92,7 @@ function extractDetails(html) {
         uid: ScrapeUtil.generateUid(title),
         title: ScrapeUtil.formatTitle(attributes.title),
         type: ScrapeUtil.getType(attributes.title),
-        href: ScrapeUtil.formatLink(attributes.href)
+        url: ScrapeUtil.formatLink(attributes.href)
       });
     }
   }
@@ -114,7 +116,7 @@ function extractText(html) {
 }
 
 module.exports = {
-  scrapeFrom,
+  breathFirstScrape,
   scrapePage,
   scrapeAll,
   extractDetails,

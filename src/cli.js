@@ -8,9 +8,12 @@ const scrapeService = require('./scrapeService');
 
 program
   .version(manifest.version)
-  .option('-C, --chdir <path>', 'change the working directory')
-  .option('-c, --config <path>', 'set config path. defaults to ./deploy.conf')
-  .option('-T, --no-tests', 'ignore test hook');
+  .option('-ls <id>', 'List single page record.')
+  .option('-lm <limit>', 'List multiple pages.')
+  .option('-ss <url>', 'Scrape and save all links from <url>.')
+  .option('-sm <url>', 'Scrape and save multiple pages starting from <url>.')
+  .option('-di', 'Display records and relationship info.')
+  .option('-dr', 'Remove all records from a database.');
 
 program.on('--help', function() {
   console.log('');
@@ -27,13 +30,14 @@ program
   .action(async (id) => {
     let page = await graphRepo.getPage(id);
     console.log(page);
+    process.exit(1);
   });
 
 program
-  .command('list:multi')
+  .command('list:multi <limit>')
   .alias('lm')
-  .action(async (env) => {
-    console.log(env);
+  .action(async (limit) => {
+    console.log(limit);
   });
 
 program
@@ -43,19 +47,24 @@ program
     try {
       await scrapeService.scrapePage(url);
       console.log('WORK FINISHED 😀');
+      process.exit(1);
     } catch (e) {
       console.log(e.name, e.message);
       console.log('ERROR OCCURRED ☹️');
+      process.exit(1);
     }
   });
 
 program
-  .command('scrape:multi')
+  .command('scrape:multi <initial-url>')
   .alias('sm')
   .option("--bfs <num>", 'Pass depth, default 10') // breath-first
   .option("--dfs <num>", 'Pass initial node') // depth-first
-  .action(async env => {
-    console.log(env);
+  .option("--limit <num>", 'Limit number of nodes per degree')
+  .action(async (initialUrl) => {
+    await scrapeService.breathFirstScrape(initialUrl, 3);
+    console.log('SCRAPING FINISHED 😀');
+    process.exit(0);
   });
 
 program
@@ -64,14 +73,15 @@ program
   .action(async () => {
     await graphRepo.removeAllData();
     console.log('DATA REMOVED 😀');
+    process.exit(1);
   });
 
 program
   .command('data:info')
-  .alias('dr')
+  .alias('di')
   .action(async () => {
-    await graphRepo.removeAllData();
-    console.log('DATA REMOVED 😀');
+    let info = await graphRepo.getDataInfo();
+    console.log(info);
   });
 
 program.on('command:*', function () {

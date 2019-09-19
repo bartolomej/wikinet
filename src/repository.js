@@ -4,82 +4,98 @@ const driver = neo4j.driver(
   neo4j.auth.basic('neo4j', 'wiki')
 );
 let session = driver.session();
+//initDb();
+
+async function initDb() {
+  await session
+    .run(`
+      CREATE CONSTRAINT ON (p:Page) 
+      ASSERT p.id IS UNIQUE
+    `)
+}
 
 
 module.exports.savePage = async (page) => {
-  await session
-    .run(`CREATE (:Page {
-      id: '${page.id}',
-      type: '${page.type}',
-      url: '${page.url}',
-      description: "${page.description}"
-    })`);
-  for (let i = 0; i < page.connections.length; i++) {
-    const neighborPage = page.connections[i];
+  try {
     await session
       .run(`CREATE (:Page {
-        id: '${neighborPage.id}',
-        type: '${neighborPage.type}',
-        url: '${neighborPage.url}',
-        description: "${neighborPage.description}"
-      })`);
-    await session
-      .run(`
-        MATCH (from:Page {id: '${page.id}'}), 
-              (to:Page {id: '${neighborPage.id}'}) 
-        CREATE (from) - [:FOLLOWS] -> (to)`
-      );
+      id: '${page.id}',
+      title: '${page.title}',
+      type: '${page.type}',
+      url: '${page.url}'
+    })`);
+  } catch (e) {
+    console.log(e);
+  }
+  for (let id in page.connections) {
+    const neighborPage = page.connections[id];
+    try {
+      await session
+        .run(`CREATE (:Page {
+          id: '${neighborPage.id}',
+          title: '${neighborPage.title}',
+          type: '${neighborPage.type}',
+          url: '${neighborPage.url}'
+        })`);
+      await session
+        .run(`
+          MATCH (from:Page {id: '${page.id}'}), 
+                (to:Page {id: '${neighborPage.id}'}) 
+          CREATE (from) - [:REFERENCES] -> (to)`
+        );
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 };
 
 module.exports.getPages = async (limit) => {
-  return await session
+  return deserialize(await session
     .run(`
       MATCH(n:Page) 
-      RETURN n LIMIT 25
-    `);
+      RETURN n ${limit ? 'LIMIT ' + limit : ''}
+    `));
 };
 
 module.exports.getPage = async (id) => {
-  return await session
+  return deserialize(await session
     .run(`
       MATCH (n) 
       WHERE n.id = '${id}'
       RETURN n
-    `);
+    `));
 }
 
-module.exports.getGraph = async (limit) => {
-  return await session
+module.exports.getPageNeighbors = async (url, limit) => {
+  return deserialize(await session
     .run(`
-      START n=node(*) 
-      MATCH (n)-[r]->(m) 
-      RETURN n,r,m ${limit ? `LIMIT ${limit}` : ''}
-    `);
-};
+      MATCH (:Page {url: '${url}'})-[r]->(n:Page)
+      RETURN n ${limit ? `LIMIT ${limit}` : ''}
+    `));
+}
 
-module.exports.getPagesByDegrees = async (degrees) => {
-  return await session
+module.exports.getGraph = async (limit, id) => {
+  return deserializeGraph(await session
     .run(`
-      MATCH (n)
-      WHERE size((n)--()) = ${limit}
-      RETURN n
-    `);
+      ${id ? `START n = node(*) WHERE n.id = '${id}'` : ''}
+      MATCH (n)-[r*]->(d)
+      RETURN n, r, d ${limit ? 'LIMIT ' + limit : ''}
+    `));
 };
 
 /**
  * Returns n pages with
  * corresponding degrees
  */
-module.exports.getPagesDegrees = async (limit) => {
-  return await session
+module.exports.getPagesDegrees = async (limit, asc = false) => {
+  return deserialize(await session
     .run(`
        START n = node(*)
        MATCH (n)--(c)
        RETURN n, count(*) as connections
-       ORDER BY connections DESC
-       LIMIT 10
-    `);
+       ORDER BY connections ${asc ? 'ASC' : 'DESC'}
+       ${limit ? 'LIMIT ' + limit : ''}
+    `));
 };
 
 module.exports.removeAllData = async () => {
@@ -89,6 +105,34 @@ module.exports.removeAllData = async () => {
        DETACH DELETE n
     `);
 };
+
+module.exports.getDataInfo = async () => {
+  let nodes = await session.run(`
+    MATCH (n) RETURN count(*)
+  `);
+  let relationships = await session.run(`
+    MATCH (n)-[r]->() RETURN COUNT(r)
+  `);
+  return {
+    nodes: nodes.records[0]._fields[0].low,
+    relationships: relationships.records[0]._fields[0].low,
+  };
+};
+
+module.exports.getByCustomQuery = async (query) => {
+  return await session.run(query);
+}
+
+function deserialize(pagesQuery) {
+  return pagesQuery.records.map(ele => ele._fields[0].properties);
+}
+
+function deserializeGraph(graphQuery) {
+  return graphQuery.records.map(ele => ({
+    from: ele._fields[0].properties,
+    to: ele._fields[2].properties
+  }));
+}
 
 /**
  * matches degrees

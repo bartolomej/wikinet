@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "bin": "./bin/cli.js",
   "scripts": {
-    "start": "nodemon ./src/app.js",
+    "start": "node ./src/app.js",
     "init_test": "cd tests/db && sh init_db.sh && sh init_data.sh",
     "init_data": "cd tests/db && sh init_data.sh",
     "drop_test": "cd tests/db && sh purge_data.sh"

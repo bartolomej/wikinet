@@ -1,0 +1,115 @@
+<head>
+    <style> body { margin: 0; } </style>
+    <script src="/public/3d-force-graph.min.js"></script>
+</head>
+
+<body>
+<div id="3d-graph"></div>
+
+<script>
+
+    init({{limit}});
+
+    const graph = {
+        nodes: [],
+        links: []
+    };
+
+    let renderedNodes = {};
+
+    async function init(limit, id = null) {
+      let nodesRes = [];
+      if (id === null) {
+          nodesRes = await getGraph(limit);
+      } else {
+          nodesRes = await getGraphFromNode(id, limit);
+      }
+
+        console.log('edge_limit: ', limit);
+        console.log('total nodes: ', nodesRes.length);
+
+        const elem = document.getElementById("3d-graph");
+        const Graph = ForceGraph3D()(elem)
+                .enableNodeDrag(true)
+                .onNodeHover(onHover)
+                .onNodeClick(onClick)
+                .graphData(graph);
+
+        nodesRes.forEach(row => {
+            const {links, nodes} = Graph.graphData();
+            const {from, to} = row;
+            console.log(from.url);
+            if (!renderedNodes[from.url]) {
+              console.log('not ', from.url);
+                Graph.graphData({
+                    nodes: [...nodes, {
+                        id: to.url,
+                        label: to.title,
+                    }, {
+                        id: from.url,
+                        label: from.title,
+                    }],
+                    links: [...links, {
+                        id: from.url + '_' + to.url,
+                        source: from.url,
+                        target: to.url,
+                    }],
+                });
+                renderedNodes[from.url] = true;
+            } else {
+              console.log('is ', to.url)
+                Graph.graphData({
+                    nodes: [...nodes, {
+                        id: to.url,
+                        label: to.title,
+                    }],
+                    links: [...links, {
+                        id: from.url + '_' + to.url,
+                        source: from.url,
+                        target: to.url,
+                    }],
+                });
+            }
+        });
+    }
+
+    function onClick(node) {
+      let win = window.open(node.id, '_blank');
+      win.focus();
+    }
+
+    function onHover(node) {
+      console.log(node);
+      let currentElement = document.getElementById("labelBox");
+      if (currentElement) currentElement.outerHTML = "";
+      if (node === null) return;
+      let textBox = document.createElement('div');
+      textBox.id = 'labelBox';
+      textBox.style.position = 'absolute';
+      textBox.style.left = '10px';
+      textBox.style.top = '10px';
+      textBox.style.padding = '10px';
+      textBox.style.background = '#fff885';
+      textBox.innerHTML = node.label;
+      document.body.appendChild(textBox);
+    }
+
+    async function getGraph(limit = 0) {
+        return new Promise((resolve, reject) => {
+            fetch(`/api/graph${limit > 0 ? `?limit=${limit}` : ''}`)
+                    .then(res => {
+                        return resolve(res.json())
+                    })
+        })
+    }
+
+    async function getGraphFromNode(nodeId, limit = 0) {
+        return new Promise((resolve, reject) => {
+            fetch(`/api/graph/id=${nodeId}${limit > 0 ? `?limit=${limit}` : ''}`)
+                    .then(res => {
+                        return resolve(res.json())
+                    })
+        })
+    }
+</script>
+</body>
