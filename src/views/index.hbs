@@ -9,43 +9,46 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
     <title>Hello, world!</title>
+    <link rel="stylesheet" href="public/stylesheets/style.css">
 </head>
 <body>
-<div>
-    <div style="width: 900px; margin-left: auto; margin-right: auto">
-
-        <div>
-            <form method="GET" action="/graph/3d" style="float:left;">
-                <div class="form-group" >
-                    <label for="exampleInputEmail1">Wikipedia link</label>
-                    <input name="link" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter website link">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Node limit</label>
-                    <input name="limit" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter connection limits">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Render time</label>
-                    <input name="render_time" type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter render limit (400 - 7000)">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-
-
-        <div style="float: right;">
-            <h5>Pages with 3 degree connections</h5>
-            <ol>
+<div id="background-container"></div>
+<div id="content-container">
+    <form method="GET" action="/graph/2d" style="float:left;">
+        <h1>Knowledge network</h1>
+        <div class="form-group" >
+            <label for="exampleInputEmail1">Wikipedia link</label>
+            <select name="link">
                 {{#each nodes}}
-                    <li><a href="{{href}}">{{title}}</a><p>{{href}}</p></li>
+                    <option value="{{href}}">{{title}}</option>
                 {{/each}}
-            </ol>
+            </select>
         </div>
-
-    </div>
-
+        <div class="form-group">
+            <label for="exampleInputPassword1">Node limit</label>
+            <select name="limit">
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 
+<script src="public/three.r92.min.js"></script>
+<script src="public/vanta.net.min.js"></script>
+<script>
+    VANTA.NET({
+        el: "#background-container",
+        color: 0x5976cf,
+        backgroundColor: 0xfafafa,
+        points: 20.00,
+        maxDistance: 15.00,
+        spacing: 11.00
+    });
+</script>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

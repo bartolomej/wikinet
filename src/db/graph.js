@@ -4,9 +4,12 @@ const Inserts = require('./sql/Inserts');
 const Update = require('./sql/Update');
 const Delete = require('./sql/Delete');
 const mysql = require('mysql');
+const shell = require('shelljs');
+const path = require('path');
 let connection;
 
 function init(host, user, password, database) {
+  shell.exec(path.join(__dirname, 'scripts', 'init_db.sh'));
   connection = mysql.createConnection({
     host,
     user,

@@ -25,6 +25,7 @@
     "mysql": "^2.17.1",
     "node-fetch": "2.6.0",
     "request": "^2.88.0",
+    "shelljs": "^0.8.3",
     "uuid-by-string": "^2.1.1"
   }
 }

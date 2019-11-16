@@ -5,13 +5,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const GraphDb = require('./db/graph');
 require('dotenv').config({path: path.join(__dirname, '..', '.env')});
-console.log(path.join(__dirname, '..', '.env'))
 const indexRouter = require('./routes/views');
 const usersRouter = require('./routes/api');
 
 const app = express();
 
-// TODO: abstract config to environment
 // TODO: fire initialization bash script
 GraphDb.init(
   process.env.DB_HOST,
