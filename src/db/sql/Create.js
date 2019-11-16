@@ -4,7 +4,7 @@ module.exports.createAll = function () {
       href varchar(300) primary key,
       type varchar(20),
       title varchar(100),
-      scraped boolean,
+      scraped boolean
     );
   
     CREATE TABLE reference (
