@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node ./src/bin/www",
     "start-dev": "nodemon ./src/bin/www",
-    "deploy": "git push dokku master",
     "init_test": "cd tests/db && sh init_db.sh && sh init_data.sh",
     "init_data": "cd tests/db && sh init_data.sh",
     "drop_test": "cd tests/db && sh purge_data.sh"

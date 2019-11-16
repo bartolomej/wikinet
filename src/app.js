@@ -10,7 +10,6 @@ const usersRouter = require('./routes/api');
 
 const app = express();
 
-// TODO: fire initialization bash script
 GraphDb.init();
 
 app.use(logger('dev'));
