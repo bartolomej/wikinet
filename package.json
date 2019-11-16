@@ -1,10 +1,12 @@
 {
-  "name": "wiki-knowledge-graph",
+  "name": "wikipedia-network",
   "preferGlobal": true,
   "version": "0.0.0",
   "bin": "./bin/cli.js",
   "scripts": {
-    "start": "nodemon ./src/bin/www",
+    "start": "node ./src/bin/www",
+    "start-dev": "nodemon ./src/bin/www",
+    "deploy": "git push dokku master",
     "init_test": "cd tests/db && sh init_db.sh && sh init_data.sh",
     "init_data": "cd tests/db && sh init_data.sh",
     "drop_test": "cd tests/db && sh purge_data.sh"
@@ -13,6 +15,7 @@
     "cheerio": "^1.0.0-rc.3",
     "colors": "^1.3.3",
     "commander": "^2.20.0",
+    "connection-string-parser": "^1.0.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "8.1.0",
@@ -25,7 +28,6 @@
     "mysql": "^2.17.1",
     "node-fetch": "2.6.0",
     "request": "^2.88.0",
-    "shelljs": "^0.8.3",
     "uuid-by-string": "^2.1.1"
   }
 }

@@ -4,6 +4,7 @@ const ScrapeService = require('../services/scrape');
 const GraphService = require('../services/graph');
 const store = require('../db/graph');
 
+
 router.get('/page', async (req, res, next) => {
   res.json(await store.getAllPages(req.query.limit));
 });
@@ -25,6 +26,11 @@ router.get('/graph', async (req, res, next) => {
 
 router.get('/rich', async (req, res, next) => {
   res.json(await GraphService.getHighlyConnected(req.query.node, req.query.limit))
+});
+
+router.post('/schedule', async (req, res, next) => {
+  ScrapeService.scheduleScrape(req.body.url);
+  res.json({message: 'Link added'});
 });
 
 module.exports = router;

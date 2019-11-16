@@ -1,25 +1,45 @@
+const { ConnectionStringParser } = require("connection-string-parser");
 const Node = require('../models/Node');
 const Queries = require('./sql/Queries');
 const Inserts = require('./sql/Inserts');
 const Update = require('./sql/Update');
 const Delete = require('./sql/Delete');
+const Create = require('./sql/Create');
 const mysql = require('mysql');
-const shell = require('shelljs');
-const path = require('path');
 let connection;
 
-function init(host, user, password, database) {
-  shell.exec(path.join(__dirname, 'scripts', 'init_db.sh'));
-  connection = mysql.createConnection({
-    host,
-    user,
-    password,
-    database
-  });
+async function init () {
+  if (process.env.DATABASE_URL) {
+    const parser = new ConnectionStringParser({ scheme: "mysql", hosts: [] });
+    let connectionObject = parser.parse(process.env.DATABASE_URL);
+    connection = mysql.createConnection({
+      multipleStatements: true,
+      host: connectionObject.hosts[0].host,
+      user: connectionObject.username,
+      port: connectionObject.hosts[0].port,
+      password: connectionObject.password,
+      database: connectionObject.endpoint
+    });
+  } else {
+    connection = mysql.createConnection({
+      multipleStatements: true,
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME
+    });
+  }
   connection.connect();
+  // initialize database tables
+  try {
+    await query(Create.createAll());
+  } catch (e) {
+    // tables exist
+    console.log(e.message);
+  }
 }
 
-async function query(queryString, handler) {
+async function query (queryString, handler) {
   return new Promise((resolve, reject) => {
     if (handler === undefined) {
       connection.query(queryString, (error, results) => (
@@ -31,15 +51,14 @@ async function query(queryString, handler) {
   })
 }
 
-
-async function getNode(href, edgeLimit) {
+async function getNode (href, edgeLimit) {
   let node = deserialize(await getPage(href));
   let neighbors = await getNeighborIds(href, edgeLimit);
   neighbors.forEach(row => node.addEdge(row.to_node));
   return node;
 }
 
-async function getAllNodes(limit) {
+async function getAllNodes (limit) {
   let pages = await getAllPages(limit);
   let nodes = pages.map(deserialize);
   return Promise.all(nodes.map(async node => {
@@ -49,38 +68,38 @@ async function getAllNodes(limit) {
   }));
 }
 
-async function getNodes(uids) {
+async function getNodes (uids) {
   return Promise.all(uids.map(async uid => await getNode(uid)));
 }
 
-async function getMultiDegreeNodes(degrees, limit, select) {
+async function getMultiDegreeNodes (degrees, limit, select) {
   let test = await query(Queries.getMultiDegreeNodes(degrees, limit, select));
   return Promise.all(await query(
     await Queries.getMultiDegreeNodes(degrees, limit, select)))
 }
 
-async function getAllPages(limit) {
+async function getAllPages (limit) {
   return await query(Queries.getAllPages(limit));
 }
 
-async function getSecondDegreeNodes(limit) {
+async function getSecondDegreeNodes (limit) {
   let nodes = await query(Queries.getSecondDegreeNodes(limit));
   return nodes.map(deserialize);
 }
 
-async function addPage(node) {
+async function addPage (node) {
   await query(Inserts.addPage(node));
 }
 
-async function updatePage(uid, scraped, description) {
+async function updatePage (uid, scraped, description) {
   await query(Update.updatePage(uid, scraped, description));
 }
 
-async function addEdge(uidFrom, uidTo) {
+async function addEdge (uidFrom, uidTo) {
   await query(Inserts.addEdge(uidFrom, uidTo));
 }
 
-async function getPage(href) {
+async function getPage (href) {
   let results = await query(Queries.getPage(href));
   if (results.length < 1) {
     return Promise.reject(new Error('Page not found with href ' + href));
@@ -88,15 +107,15 @@ async function getPage(href) {
   return Promise.resolve(results[0]);
 }
 
-async function getPages(degrees, limit) {
+async function getPages (degrees, limit) {
   return await query(Queries.getMultiDegreeNodes(degrees, limit));
 }
 
-async function getUnscraped(limit) {
+async function getUnscraped (limit) {
   return await query(Queries.getUnscrapedPages(limit));
 }
 
-async function getConnectionStats(link, type, limit) {
+async function getConnectionStats (link, type, limit) {
   if (type === 'from') {
     return await query(Queries.getConnectionsFrom(link, limit));
   } else if (type === 'to') {
@@ -104,31 +123,31 @@ async function getConnectionStats(link, type, limit) {
   }
 }
 
-async function getHighlyScrapedNodes() {
+async function getHighlyScrapedNodes () {
   return await query(Queries.getHighlyConnectedNodes());
 }
 
-async function getNeighbors(uid) {
+async function getNeighbors (uid) {
   return await query(Queries.getNeighbors(uid));
 }
 
-async function getNeighborIds(uid, limit) {
+async function getNeighborIds (uid, limit) {
   return await query(Queries.getNeighborIds(uid, limit));
 }
 
-async function removeAllPages() {
+async function removeAllPages () {
   await query(Delete.deleteAllPages());
 }
 
-async function removeAllReferences() {
+async function removeAllReferences () {
   await query(Delete.deleteAllReferences());
 }
 
-async function removePage(uid) {
+async function removePage (uid) {
   await query(Delete.deletePage(uid));
 }
 
-function serialize(node) {
+function serialize (node) {
   return {
     type: node.type,
     title: node.title,
@@ -138,7 +157,7 @@ function serialize(node) {
   }
 }
 
-function deserialize(node) {
+function deserialize (node) {
   return new Node(
     node.href,
     node.type,

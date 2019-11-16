@@ -11,12 +11,7 @@ const usersRouter = require('./routes/api');
 const app = express();
 
 // TODO: fire initialization bash script
-GraphDb.init(
-  process.env.DB_HOST,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  process.env.DB_NAME
-);
+GraphDb.init();
 
 app.use(logger('dev'));
 app.use(express.json());

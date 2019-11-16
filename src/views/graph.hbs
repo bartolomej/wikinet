@@ -50,7 +50,15 @@
 <script src="/public/sigma/plugins/supervisor.js"></script>
 <script src="/public/sigma/plugins/worker.js"></script>
 <script src="/public/sigma/plugins/relativeSize.js"></script>
-<!-- END SIGMA IMPORTS -->
+
+<div class="spinner-wrapper">
+    <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+</div>
+
 <div id="container">
     <style>
         #graph-container {
@@ -64,30 +72,42 @@
     <div id="graph-container"></div>
 </div>
 <script>
+    window.onload = fadeOutLoader;
 
-    (function () {
-        const GAME_THEORY = 'https://en.wikipedia.org/wiki/Game_theory';
-        const CITY = 'https://en.wikipedia.org/wiki/City';
-        const CATEGORY_OF_PHILOSOPHY = 'https://en.wikipedia.org/wiki/Philosophy';
-        const APPLE = 'https://sl.wikipedia.org/wiki/Apple_Inc.';
-        init({{limit}}, '{{link}}')
-    })();
+    function fadeOutLoader () {
+        let loader = document.getElementsByClassName('spinner-wrapper')[0];
+        let opacity = 1;
 
-    let s = new sigma(
-            {
-                renderer: {
-                    container: document.getElementById('graph-container'),
-                    type: 'canvas'
-                },
-                settings: {}
+        function fadeOut () {
+            if (opacity <= 0) {
+                loader.style.display = 'none';
+                return;
             }
-    );
+            loader.style.opacity = opacity.toString();
+            opacity -= 0.02;
+            window.requestAnimationFrame(fadeOut);
+        }
+
+        window.requestAnimationFrame(fadeOut);
+    }
+</script>
+<script>
+
+    init({{limit}}, '{{link}}');
+
+    let s = new sigma({
+        renderer: {
+            container: document.getElementById('graph-container'),
+            type: 'canvas'
+        },
+        settings: {}
+    });
     let g = {
-      nodes: [],
-      edges: []
+        nodes: [],
+        edges: []
     };
 
-    async function init(limit, href) {
+    async function init (limit, href) {
         let nodesRes = await getGraph(limit, href);
 
         console.log('degrees: ', 3);
@@ -101,7 +121,7 @@
                 x: Math.random(),
                 y: Math.random(),
                 size: Math.random(),
-                color: '#c4c4cc'
+                color: '#5976cf'
             });
 
             node.edges.forEach(edge => {
@@ -110,7 +130,7 @@
                     source: node.href,
                     target: edge,
                     size: Math.random(),
-                    color: '#ccc'
+                    color: 'rgb(179,190,213)'
                 });
             });
         });
@@ -120,15 +140,15 @@
         sigma.plugins.relativeSize(s, 1);
         s.refresh();
         s.startForceAtlas2();
-        window.setTimeout(function() {s.killForceAtlas2()}, {{renderTime}});
+        window.setTimeout(function () {s.killForceAtlas2()}, nodesRes.length * 2.2);
 
-        s.bind('clickNode', function(e) {
-          console.log(e);
-          window.open(e.data.node.id);
+        s.bind('clickNode', function (e) {
+            console.log(e);
+            window.open(e.data.node.id);
         })
     }
 
-    async function getGraph(limit, initialNode) {
+    async function getGraph (limit, initialNode) {
         return new Promise((resolve, reject) => {
             fetch(`/api/graph?limit=${limit}&node=${initialNode}`)
                     .then(res => {

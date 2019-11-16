@@ -6,6 +6,11 @@ const colors = require('colors/safe');
 const GraphService = require('./graph');
 
 
+async function scheduleScrape(url) {
+  await scrapePage(url, 500);
+  await scrapeFrom(url, 3);
+}
+
 async function scrapeAll(limit, infoCallback) {
   // TODO: add smarts (scrapeAll poorly connected pages,..)
   let pages = await repo.getUnscraped(limit);
@@ -20,7 +25,6 @@ async function scrapeAll(limit, infoCallback) {
       console.log(e.message);
     }
   }
-  await cache();
 }
 
 async function depthFirstScrape(initialHref, degrees = 10) {
@@ -35,7 +39,6 @@ async function depthFirstScrape(initialHref, degrees = 10) {
       await depthFirstScrape(page.edges[index], degrees-1);
     } catch (e) {}
   }
-  await cache();
 }
 
 async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
@@ -45,7 +48,7 @@ async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
   for (let i = 0; i < page.edges.length; i++) {
     console.log(colors.green('edge: ' + page.edges[i]));
     try {
-      let {links} = await scrapePage(page.edges[i]);
+      let {links} = await scrapePage(page.edges[i], 30);
       console.log(colors.red('firstLink: ' + links[0] + ' degree: ' + currentDegree));
       links.forEach(link => scrapeFrom(link, limit, degrees, currentDegree + 1));
     } catch (e) {
@@ -53,10 +56,9 @@ async function scrapeFrom(initialHref, degrees, currentDegree = 0, limit) {
       console.log(e);
     }
   }
-  await cache();
 }
 
-async function scrapePage(href) {
+async function scrapePage(href, resolveAfter) {
   let html;
   try {
     html = await request(href);
@@ -77,6 +79,7 @@ async function scrapePage(href) {
   }
 
   for (let i = 0; i < links.length; i++) {
+    if (i >= resolveAfter) break;
     try {
       await repo.addPage({
         type: links[i].type,
@@ -85,7 +88,7 @@ async function scrapePage(href) {
         scraped: false, description: ''
       });
       await repo.addEdge(href, links[i].href);
-      console.log('added link: ' + links[i].href);
+      console.log(`added link ${i}: ` + links[i].href);
     } catch (e) {
       // do not log: double db entry error
     }
@@ -132,14 +135,11 @@ function extractText(html) {
   }
 }
 
-async function cache() {
-  await GraphService.computeHighlyConnected();
-}
-
 module.exports = {
   scrapeFrom,
   scrapePage,
   scrapeAll,
   extractDetails,
-  depthFirstScrape
+  depthFirstScrape,
+  scheduleScrape
 };
