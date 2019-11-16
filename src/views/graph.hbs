@@ -210,9 +210,14 @@
             top: 50px;
             width: 400px;
         `);
-        node.innerHTML = metadata.description;
+        let descriptionContainer = document.createElement('div');
+        descriptionContainer.innerHTML = metadata.description;
+        let imageContainer = document.createElement('img');
+        imageContainer.setAttribute('src', metadata.image);
+        imageContainer.setAttribute('style', 'width: 200px;');
+        node.appendChild(imageContainer);
+        node.appendChild(descriptionContainer);
 
-        console.log(mousePosition)
         let prevChild = document.getElementById('meta-description');
         if (prevChild) {
             document.getElementById('meta-container').replaceChild(prevChild, node);
