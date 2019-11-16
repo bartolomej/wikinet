@@ -1,5 +1,3 @@
-<center><img src="public/images/network.png"/></center>
-
 ## Wikipedia knowledge graph
 Graph construction and visualization of wikipedia knowledge interconnectedness.
 
