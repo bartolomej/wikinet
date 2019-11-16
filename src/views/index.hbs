@@ -1,38 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="icon" href="assets/images/landing.png">
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Personal website with projects, blogs and ideas.">
-    <meta name="author" content="Bartolomej Kozorog">
-
-    <!-- OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+ -->
-    <meta property="og:site_name" content="" /> <!-- website name -->
-    <meta property="og:site" content="" /> <!-- website link -->
-    <meta property="og:title" content=""/> <!-- title shown in the actual shared post -->
-    <meta property="og:description" content="" /> <!-- description shown in the actual shared post -->
-    <meta property="og:image" content="" /> <!-- image link, make sure it's jpg -->
-    <meta property="og:url" content="" /> <!-- where do you want your post to link to -->
-    <meta property="og:type" content="article" />
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <style>
-        .rotate:hover {
-            transform: rotate(360deg);
-            transition: transform 0.5s ease-in-out;
-        }
-    </style>
-    <title>Hello, world!</title>
-    <link rel="stylesheet" href="public/stylesheets/style.css">
-</head>
-<body>
-
 <div class="spinner-wrapper">
     <div class="spinner">
         <div class="bounce1"></div>
@@ -41,34 +6,38 @@
     </div>
 </div>
 
-<a style="position: fixed; top: 10px; left: 10px; z-index: 3" href="/add">CUSTOM WIKI PAGE</a>
+<a class="top-left-button" href="/add">CUSTOM WIKI PAGE</a>
 <a style="position: fixed; top: 10px; right: 10px; z-index: 3" href="https://github.com/bartolomej/wikipedia-network" target="_blank">
-    <img class="rotate" style="width: 45px" src="public/github.png">
+    <img width="35px" class="rotate" style="width: 45px" src="public/images/github.png">
 </a>
 
 <div id="background-container"></div>
 <div id="content-container">
     <form class="form" method="GET" action="/graph">
-        <h1 style="color: #5976cf">Knowledge network</h1>
-        <p style="color: lightslategrey">Visually view connections between related Wikipedia pages.</p>
-        <div class="form-group" >
-            <label for="exampleInputEmail1">Wikipedia page</label>
-            <select class="form-control" name="link">
-                {{#each nodes}}
-                    <option value="{{href}}">{{title}}</option>
-                {{/each}}
-            </select>
+        <div class="landing-top">
+            <h1 style="color: #5976cf">Wikipedia Graph</h1>
+            <p style="color: lightslategrey">Visualized network of related Wikipedia pages.</p>
         </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1">Connections limit</label>
-            <select class="form-control" name="limit">
-                <option value="10">10</option>
-                <option value="50">50</option>
-                <option value="100" selected>100</option>
-                <option value="200">200</option>
-            </select>
+        <div class="landing-bottom">
+            <div class="form-group" >
+                <label for="exampleInputEmail1">Wikipedia page</label>
+                <select class="form-control" name="link">
+                    {{#each nodes}}
+                        <option value="{{href}}">{{title}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Connections limit</label>
+                <select class="form-control" name="limit">
+                    <option value="10">10</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 
@@ -109,5 +78,3 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-</body>
-</html>

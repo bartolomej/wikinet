@@ -4,6 +4,7 @@ const repo = require('../db/graph');
 const ScrapeUtil = require('../utils');
 const colors = require('colors/safe');
 const GraphService = require('./graph');
+const fetch = require('node-fetch');
 
 
 async function scheduleScrape(url) {
@@ -70,8 +71,10 @@ async function scrapePage(href, resolveAfter) {
 
   try {
     await repo.addPage({
-      type, title, href,
-      scraped: false, description: ''
+      type,
+      title,
+      href,
+      scraped: false
     });
   } catch (e) {
     console.log(`Page exists ${href}`);
@@ -141,5 +144,5 @@ module.exports = {
   scrapeAll,
   extractDetails,
   depthFirstScrape,
-  scheduleScrape
+  scheduleScrape,
 };

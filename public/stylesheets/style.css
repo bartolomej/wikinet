@@ -26,8 +26,41 @@ body {
   position: fixed;
   left: 50%;
   transform: translate(-50%, 0);
-  top: 30vh;
+  top: 20vh;
   z-index: 2;
+}
+
+.top-left-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  color: #5976cf;
+}
+
+#stats-container {
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+}
+
+#stats-container a {
+  color: #5976CF;
+}
+
+.btn {
+  background-color: #5976cf
+}
+
+.landing-top {
+  margin-bottom: 40px;
+}
+
+.landing-bottom {
+
 }
 
 h1 {

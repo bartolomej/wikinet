@@ -51,6 +51,17 @@
 <script src="/public/sigma/plugins/worker.js"></script>
 <script src="/public/sigma/plugins/relativeSize.js"></script>
 
+
+<style>
+    #graph-container {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: absolute;
+    }
+</style>
+
 <div class="spinner-wrapper">
     <div class="spinner">
         <div class="bounce1"></div>
@@ -59,16 +70,15 @@
     </div>
 </div>
 
+<div style="position: fixed; bottom: 10px; left: 10px" id="meta-container">
+
+</div>
+
+<div id="stats-container">
+    <a href="https://github.com/bartolomej/cool-links#graph-theory">Find out more about graph theory.</a>
+</div>
+
 <div id="container">
-    <style>
-        #graph-container {
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            position: absolute;
-        }
-    </style>
     <div id="graph-container"></div>
 </div>
 <script>
@@ -95,6 +105,13 @@
 
     init({{limit}}, '{{link}}');
 
+    let mousePosition = { x: 0, y: 0 };
+    window.onmousemove = function (event) {
+        mousePosition = {
+            x: event.screenX,
+            y: event.screenY
+        }
+    };
     let s = new sigma({
         renderer: {
             container: document.getElementById('graph-container'),
@@ -113,11 +130,13 @@
         console.log('degrees: ', 3);
         console.log('edge_limit: ', limit);
         console.log('total nodes: ', nodesRes.length);
+        displayInfo(nodesRes.length);
 
         nodesRes.forEach(node => {
             g.nodes.push({
                 id: node.href,
                 label: node.title,
+                description: node.description,
                 x: Math.random(),
                 y: Math.random(),
                 size: Math.random(),
@@ -140,12 +159,66 @@
         sigma.plugins.relativeSize(s, 1);
         s.refresh();
         s.startForceAtlas2();
-        window.setTimeout(function () {s.killForceAtlas2()}, nodesRes.length * 2.2);
+        window.setTimeout(function () {s.killForceAtlas2()}, nodesRes.length * 0.7);
 
         s.bind('clickNode', function (e) {
-            console.log(e);
             window.open(e.data.node.id);
+        });
+
+        s.bind('overNode', function (e) {
+            displayArticleSummary(e.data.node.id);
+        });
+
+        s.bind('outNode', function () {
+            let node = document.getElementById('meta-description');
+            document.getElementById('meta-container').removeChild(node);
         })
+    }
+
+    async function getMetadata (articleUrl) {
+        let parsedUrl = articleUrl.split('/');
+        let articleUrlId = parsedUrl[parsedUrl.length - 1];
+        if (!articleUrlId.includes(':')) {
+            let apiURL = `https://en.wikipedia.org/api/rest_v1/page/summary/${articleUrlId}`;
+            let response = await fetch(apiURL);
+            let metadata = await response.json();
+            return {
+                description: metadata.extract_html,
+                image: metadata.originalimage.source
+            }
+        }
+    }
+
+    function displayInfo (totalNodes) {
+        const textNode = (text) => document.createTextNode(text);
+        let totalNodesText = textNode(`TOTAL NODES: ${totalNodes}`);
+        document.getElementById('stats-container').appendChild(totalNodesText)
+    }
+
+    async function displayArticleSummary (href, x, y) {
+        let metadata;
+        try {
+            metadata = await getMetadata(href);
+        } catch (e) {
+            return;
+        }
+
+        let node = document.createElement('div');
+        node.id = 'meta-description';
+        node.setAttribute('style', `
+            display: absolute;
+            top: 50px;
+            width: 400px;
+        `);
+        node.innerHTML = metadata.description;
+
+        console.log(mousePosition)
+        let prevChild = document.getElementById('meta-description');
+        if (prevChild) {
+            document.getElementById('meta-container').replaceChild(prevChild, node);
+        } else {
+            document.getElementById('meta-container').appendChild(node);
+        }
     }
 
     async function getGraph (limit, initialNode) {

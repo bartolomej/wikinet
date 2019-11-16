@@ -1,8 +1,8 @@
 module.exports.addPage = (node) => {
   return (
-    `INSERT INTO page (type, title, href, scraped, description) 
+    `INSERT INTO page (type, title, href, scraped, description, image) 
     VALUES ('${node.type}', '${node.title}', 
-    '${node.href}', ${node.scraped}, '${node.description}')`
+    '${node.href}', ${node.scraped}, '${node.description}', '${node.image}')`
   );
 };
 

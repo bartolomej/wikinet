@@ -5,7 +5,6 @@ module.exports.createAll = function () {
       type varchar(20),
       title varchar(100),
       scraped boolean,
-      description mediumtext
     );
   
     CREATE TABLE reference (
