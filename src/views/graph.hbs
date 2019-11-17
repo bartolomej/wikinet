@@ -168,25 +168,6 @@
         s.bind('overNode', function (e) {
             displayArticleSummary(e.data.node.id);
         });
-
-        s.bind('outNode', function () {
-            let node = document.getElementById('meta-description');
-            document.getElementById('meta-container').removeChild(node);
-        })
-    }
-
-    async function getMetadata (articleUrl) {
-        let parsedUrl = articleUrl.split('/');
-        let articleUrlId = parsedUrl[parsedUrl.length - 1];
-        if (!articleUrlId.includes(':')) {
-            let apiURL = `https://en.wikipedia.org/api/rest_v1/page/summary/${articleUrlId}`;
-            let response = await fetch(apiURL);
-            let metadata = await response.json();
-            return {
-                description: metadata.extract_html,
-                image: metadata.originalimage.source
-            }
-        }
     }
 
     function displayInfo (totalNodes) {
@@ -214,15 +195,29 @@
         descriptionContainer.innerHTML = metadata.description;
         let imageContainer = document.createElement('img');
         imageContainer.setAttribute('src', metadata.image);
-        imageContainer.setAttribute('style', 'width: 200px;');
+        imageContainer.setAttribute('style', 'width: 200px; z-index: 4;');
         node.appendChild(imageContainer);
         node.appendChild(descriptionContainer);
 
         let prevChild = document.getElementById('meta-description');
         if (prevChild) {
-            document.getElementById('meta-container').replaceChild(prevChild, node);
+            document.getElementById('meta-container').replaceChild(node, prevChild);
         } else {
             document.getElementById('meta-container').appendChild(node);
+        }
+    }
+
+    async function getMetadata (articleUrl) {
+        let parsedUrl = articleUrl.split('/');
+        let articleUrlId = parsedUrl[parsedUrl.length - 1];
+        if (!articleUrlId.includes(':')) {
+            let apiURL = `https://en.wikipedia.org/api/rest_v1/page/summary/${articleUrlId}`;
+            let response = await fetch(apiURL);
+            let metadata = await response.json();
+            return {
+                description: metadata.extract_html,
+                image: metadata.originalimage.source
+            }
         }
     }
 
