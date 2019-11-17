@@ -70,7 +70,7 @@
     </div>
 </div>
 
-<div style="position: fixed; bottom: 10px; left: 10px" id="meta-container">
+<div style="position: fixed; bottom: 10px; left: 10px; z-index: 100; font-size: 14px;" id="meta-container">
 
 </div>
 
@@ -166,7 +166,10 @@
         });
 
         s.bind('overNode', function (e) {
-            displayArticleSummary(e.data.node.id);
+          try {
+              displayArticleSummary(e.data.node.id);
+          } catch (e) { }
+            console.log('over node: ', e.data.node.id);
         });
     }
 
@@ -176,13 +179,11 @@
         document.getElementById('stats-container').appendChild(totalNodesText)
     }
 
-    async function displayArticleSummary (href, x, y) {
-        let metadata;
-        try {
-            metadata = await getMetadata(href);
-        } catch (e) {
-            return;
-        }
+    async function displayArticleSummary (href) {
+        let metadata = await getMetadata(href);
+
+        console.log('metadata found');
+        console.log(metadata);
 
         let node = document.createElement('div');
         node.id = 'meta-description';
@@ -191,12 +192,14 @@
             top: 50px;
             width: 400px;
         `);
+        if (metadata && metadata.image) {
+            let imageContainer = document.createElement('img');
+            imageContainer.setAttribute('src', metadata.image);
+            imageContainer.setAttribute('style', 'width: 200px; z-index: 4;');
+            node.appendChild(imageContainer);
+        }
         let descriptionContainer = document.createElement('div');
         descriptionContainer.innerHTML = metadata.description;
-        let imageContainer = document.createElement('img');
-        imageContainer.setAttribute('src', metadata.image);
-        imageContainer.setAttribute('style', 'width: 200px; z-index: 4;');
-        node.appendChild(imageContainer);
         node.appendChild(descriptionContainer);
 
         let prevChild = document.getElementById('meta-description');
@@ -215,19 +218,15 @@
             let response = await fetch(apiURL);
             let metadata = await response.json();
             return {
-                description: metadata.extract_html,
-                image: metadata.originalimage.source
+                description: metadata.extract_html || metadata.detail,
+                image: metadata.originalimage && metadata.originalimage.source
             }
         }
     }
 
     async function getGraph (limit, initialNode) {
-        return new Promise((resolve, reject) => {
-            fetch(`/api/graph?limit=${limit}&node=${initialNode}`)
-                    .then(res => {
-                        return resolve(res.json())
-                    })
-        })
+        const response = await fetch(`/api/graph?limit=${limit}&node=${initialNode}`);
+        return await response.json();
     }
 
 </script>
