@@ -6,6 +6,18 @@ module.exports.getAllPages = (limit) => {
   return `SELECT * FROM page ${limit !== undefined ? `LIMIT ${limit}` : ''}`;
 };
 
+module.exports.getPageCount = () => {
+  return (
+    `SELECT count(*) FROM page`
+  )
+};
+
+module.exports.getLinksCount = () => {
+  return (
+    `SELECT count(*) FROM reference`
+  )
+};
+
 module.exports.getUnscrapedPages = (limit) => {
   return (
     `SELECT * FROM page p

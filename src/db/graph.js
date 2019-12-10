@@ -109,6 +109,15 @@ async function getPage (href) {
   return Promise.resolve(results[0]);
 }
 
+async function getCount () {
+  const nodeCount = await query(Queries.getPageCount());
+  const linkCount = await query(Queries.getLinksCount());
+  return {
+    linkCount: linkCount[0]['count(*)'],
+    nodeCount: nodeCount[0]['count(*)']
+  }
+}
+
 async function getPages (degrees, limit) {
   return await query(Queries.getMultiDegreeNodes(degrees, limit));
 }
@@ -183,6 +192,7 @@ module.exports = {
   getNeighbors,
   getNeighborIds,
   removePage,
+  getCount,
   removeAllPages,
   getConnectionStats,
   removeAllReferences,

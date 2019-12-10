@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ScrapeService = require('../services/scrape');
 const GraphService = require('../services/graph');
+const GraphDb = require('../db/graph');
 const store = require('../db/graph');
 
 router.get('/page', async (req, res, next) => {

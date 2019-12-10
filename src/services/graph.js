@@ -47,7 +47,3 @@ module.exports.graph = async function (initialNodeUid, degreeLimit, nodeLimit) {
 
   }
 };
-
-module.exports.getHighlyConnected = async function () {
-  return await GraphDB.getHighlyScrapedNodes();
-};

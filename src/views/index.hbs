@@ -1,3 +1,17 @@
+<style>
+    #stats {
+        z-index: 100;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        color: #5976cf
+    }
+    #stats span {
+        font-weight: bold;
+        font-size: 20px;
+    }
+</style>
+
 <div class="spinner-wrapper">
     <div class="spinner">
         <div class="bounce1"></div>
@@ -40,6 +54,11 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </form>
+</div>
+
+<div id="stats">
+    <p>TOTAL PAGES: <span>{{stats.nodeCount}}</span></p>
+    <p>TOTAL LINKS: <span>{{stats.linkCount}}</span></p>
 </div>
 
 <script src="public/three.r92.min.js"></script>

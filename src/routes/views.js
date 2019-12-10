@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const GraphService = require('../services/graph');
+const GraphDb = require('../db/graph');
 
 router.get('/', async (req, res, next) => {
-  let nodes = await GraphService.getHighlyConnected();
-  res.render('index', { nodes });
+  let nodes = await GraphDb.getHighlyScrapedNodes();
+  let stats = await GraphDb.getCount();
+  res.render('index', { nodes, stats });
 });
 
 router.get('/add', async (req, res, next) => {
