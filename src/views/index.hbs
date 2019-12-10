@@ -7,7 +7,8 @@
 </div>
 
 <a class="top-left-button" href="/add">CUSTOM WIKI PAGE</a>
-<a style="position: fixed; top: 10px; right: 10px; z-index: 3" href="https://github.com/bartolomej/wikipedia-network" target="_blank">
+<a style="position: fixed; top: 10px; right: 10px; z-index: 3" href="https://github.com/bartolomej/wikipedia-network"
+   target="_blank">
     <img width="35px" class="rotate" style="width: 45px" src="public/images/github.png">
 </a>
 
@@ -19,7 +20,7 @@
             <p style="color: lightslategrey">Visualized network of related Wikipedia pages.</p>
         </div>
         <div class="landing-bottom">
-            <div class="form-group" >
+            <div class="form-group">
                 <label for="exampleInputEmail1">Wikipedia page</label>
                 <select class="form-control" name="link">
                     {{#each nodes}}
@@ -58,23 +59,31 @@
         fadeOutLoader();
     };
 
-    function fadeOutLoader() {
+    function fadeOutLoader () {
         let loader = document.getElementsByClassName('spinner-wrapper')[0];
         let opacity = 1;
-        function fadeOut() {
+
+        function fadeOut () {
             if (opacity <= 0) {
                 loader.style.display = 'none';
                 return;
             }
             loader.style.opacity = opacity.toString();
-            opacity -= 0.02;
+            opacity -= 0.08;
             window.requestAnimationFrame(fadeOut);
         }
+
         window.requestAnimationFrame(fadeOut);
     }
 </script>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>

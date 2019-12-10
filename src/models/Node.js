@@ -1,6 +1,6 @@
 module.exports = class Node {
 
-  constructor(href, type, title, endNode) {
+  constructor (href, type, title, endNode) {
     this.href = href;
     this.type = type;
     this.title = title;
@@ -8,12 +8,12 @@ module.exports = class Node {
     this.edges = [];
   }
 
-  addEdge(nodeUid) {
+  addEdge (nodeUid) {
     this.edges.push(nodeUid);
   }
 
-  addEdges(nodeUids) {
+  addEdges (nodeUids) {
     nodeUids.forEach(this.addEdge)
   }
-  
+
 };

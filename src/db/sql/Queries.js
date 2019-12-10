@@ -17,14 +17,14 @@ module.exports.getUnscrapedPages = (limit) => {
 };
 
 /*
-module.exports.getUnscrapedPages = (limit) => {
-  return (
-    `SELECT * FROM page p
-    WHERE scraped is false
-    ${limit !== undefined ? `LIMIT ${limit}` : ''}`
-  );
-};
-*/
+ module.exports.getUnscrapedPages = (limit) => {
+ return (
+ `SELECT * FROM page p
+ WHERE scraped is false
+ ${limit !== undefined ? `LIMIT ${limit}` : ''}`
+ );
+ };
+ */
 
 module.exports.getConnectionsFrom = (link, limit) => {
   return (
@@ -100,14 +100,14 @@ module.exports.getMultiDegreeNodes = (degrees, limit = undefined, select = 'href
 
   for (let i = 0; i < degrees; i++) {
     query += `p${i}.${select}`;
-    query += `${i === degrees -1 ? ' ' : ', '}`;
+    query += `${i === degrees - 1 ? ' ' : ', '}`;
   }
 
   for (let i = 0; i < degrees; i++) {
     if (i === 0) query += `FROM page p0`;
     if (i > 0) {
       query += ` INNER JOIN page p${i} `;
-      query += `ON p${i}.href = r${i-1}.to_node`;
+      query += `ON p${i}.href = r${i - 1}.to_node`;
     }
     if (i < degrees - 1 || degrees === 1) {
       query += ` INNER JOIN reference r${i} `;

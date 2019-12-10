@@ -60,6 +60,24 @@
         right: 0;
         position: absolute;
     }
+    #meta-description {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 400px;
+        animation: ease-in-out 1s fadeInUp forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateX(-30%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 </style>
 
 <div class="spinner-wrapper">
@@ -94,7 +112,7 @@
                 return;
             }
             loader.style.opacity = opacity.toString();
-            opacity -= 0.02;
+            opacity -= 0.08;
             window.requestAnimationFrame(fadeOut);
         }
 
@@ -166,9 +184,10 @@
         });
 
         s.bind('overNode', function (e) {
-          try {
-              displayArticleSummary(e.data.node.id);
-          } catch (e) { }
+            try {
+                displayArticleSummary(e.data.node.id);
+            } catch (e) {
+            }
             console.log('over node: ', e.data.node.id);
         });
     }
@@ -182,16 +201,10 @@
     async function displayArticleSummary (href) {
         let metadata = await getMetadata(href);
 
-        console.log('metadata found');
-        console.log(metadata);
+        console.log(`'${href}': { image: ${!!metadata.image}, desc: ${!!metadata.description} }`);
 
         let node = document.createElement('div');
         node.id = 'meta-description';
-        node.setAttribute('style', `
-            display: absolute;
-            top: 50px;
-            width: 400px;
-        `);
         if (metadata && metadata.image) {
             let imageContainer = document.createElement('img');
             imageContainer.setAttribute('src', metadata.image);

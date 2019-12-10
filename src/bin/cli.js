@@ -6,7 +6,7 @@ const version = require('../../package.json').version;
 
 program.version(version);
 
-program.on('--help', function() {
+program.on('--help', function () {
   console.log('');
   console.log('Examples:');
   console.log('');
@@ -34,7 +34,7 @@ program
   .alias('s')
   .option("--limit <num>", 'Limit scraping pages')
   .option("--link <num>", 'Scrape by web link')
-  .option("--all" , 'Scrape all unscraped')
+  .option("--all", 'Scrape all unscraped')
   .action(async (env) => {
     if (env.hasOwnProperty('all')) {
       await display.scrapeAll(env.limit);

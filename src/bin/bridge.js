@@ -2,10 +2,9 @@ const DB = require('../db/graph');
 const ScrapeService = require('../services/scrape');
 const GraphDb = require('../db/graph');
 const path = require('path');
-require('dotenv').config({path: path.join(__dirname, '..', '..', '.env')});
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 require('colors');
 const colors = require('colors/safe');
-
 
 const init = () => GraphDb.init(
   process.env.DB_HOST,

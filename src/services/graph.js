@@ -1,7 +1,4 @@
-const Graph = require('../models/Graph');
-const Node = require('../models/Node');
 const GraphDB = require('../db/graph');
-
 
 module.exports.twoDegreeGraph = async function (initialNodeHref, limit) {
   let graph = [];
@@ -40,7 +37,7 @@ module.exports.graph = async function (initialNodeUid, degreeLimit, nodeLimit) {
   let graph = [];
   let initial = await GraphDB.getNode(initialNodeUid, nodeLimit);
 
-  async function construct(node, edge) {
+  async function construct (node, edge) {
     let neighbors = [];
 
     let nextNode = await GraphDB.getNode(node.edges[edge], nodeLimit);

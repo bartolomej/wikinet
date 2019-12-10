@@ -6,23 +6,23 @@ module.exports = class Graph {
    * G = {V, E}
    */
 
-  constructor() {
+  constructor () {
     this.nodes = {};
     this.edges = {};
     this.degrees = {};
   }
 
-  addNode(node) {
+  addNode (node) {
     if (!this.nodes[node.uid]) {
       this.nodes[node.uid] = node;
     }
   }
 
-  addNodes(nodes) {
+  addNodes (nodes) {
     nodes.forEach(this.addNode);
   }
 
-  addNodesForDegree(degree, nodes) {
+  addNodesForDegree (degree, nodes) {
     this.degrees[degree] = [];
     nodes.forEach(node => {
       this.degrees[degree].push(node.uid);
@@ -30,24 +30,25 @@ module.exports = class Graph {
     })
   }
 
-  addEdge(fromUid, toUid) {
+  addEdge (fromUid, toUid) {
     if (!this.nodes[fromUid])
       throw new Error(`Node ${fromUid} doesn't exist`);
     this.nodes[fromUid].addEdge(toUid);
   }
 
-  getFirstDegreeUids() {
+  getFirstDegreeUids () {
     return this.degrees[1];
   }
 
-  getById(uid) {
+  getById (uid) {
     return this.nodes[uid];
   }
 
-  bfs(startNodeUid) {
+  bfs (startNodeUid) {
     let edges = this.nodes[startNodeUid].edges;
+
     // TODO: implement graph traversal algorithms
-    function traverse() {
+    function traverse () {
 
     }
   }
