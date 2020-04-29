@@ -11,12 +11,12 @@ let connection;
 async function init () {
   if (process.env.DATABASE_URL) {
     const parser = new ConnectionStringParser({ scheme: "mysql", hosts: [] });
-    let connectionObject = parser.parse(process.env.DATABASE_URL);
+    let connectionObject = parser.parse(process.env.DB_STRING);
     connection = mysql.createConnection({
       multipleStatements: true,
       host: connectionObject.hosts[0].host,
       user: connectionObject.username,
-      port: connectionObject.hosts[0].port,
+      port: connectionObject.hosts[0].port || 3306,
       password: connectionObject.password,
       database: connectionObject.endpoint
     });
@@ -25,7 +25,7 @@ async function init () {
       multipleStatements: true,
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
-      port: process.env.DB_PORT,
+      port: process.env.DB_PORT || 3306,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME
     });

@@ -1,34 +1,41 @@
-## Wikipedia knowledge graph
-Graph construction and visualization of wikipedia knowledge interconnectedness.
+# Wikipedia knowledge graph
+
+Wikipedia pages connectedness visualization.
 
 ![ims](https://i.ibb.co/8P0byVb/Screenshot-2019-11-16-at-22-17-29.png)
 Preview.
 
-### Available Scripts
+## Setup
+
+Provide mysql database credentials manually:
+```dotenv
+DB_HOST = localhost
+DB_PORT = 3306
+DB_USER = someuser
+DB_NAME = databasename
+DB_PASSWORD = yourpassword
+```
+
+Or provide mysql connection string:
+```dotenv
+DB_STRING = yourconnectionstring
+```
+
+## Usage
 
 In the project directory, you can run:
 
-#### `npm start`
+1. Install dependencies with `npm i` or `yarn install`
 
-Runs the server app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-
-#### `node bin/cli --help`
-
-List of available command tools and commands<br>
+2. Run server app with `npm start` or `yarn start`
 
 
-#### `node bin/cli scrape --link <wiki-link>`
+### Cli commands
 
-Start with this command. Scrapes all the connections to other pages from page <wiki-link><br>
+- List of available commands: `node src/bin/cli --help`
 
+- Start with this command. Scrapes all neighbours from given page url: `node src/bin/cli scrape --link <url>`
 
-#### `node bin/cli bfs --initial <wiki-link>`
+- Scrapes 3 degrees from given page url (breath first search):`node src/bin/cli bfs --initial <url>`
 
-Scrapes 3 degree graph from initial page <wiki-link> (breadh first scrape).<br>
-
-
-#### `node bin/cli dbs --initial <wiki-link> --degrees <num>`
-
-Scrapes <num> degree graph from initial page <wiki-link> (depth first scrape).<br>
+- Scrapes <num> degrees from given url (depth first scrape):`node src/bin/cli dbs --initial <wiki-link> --degrees <num>`
