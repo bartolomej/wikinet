@@ -1,8 +1,7 @@
 const request = require('../utils').request;
 const $ = require('cheerio');
 const repo = require('../db/graph');
-const ScrapeUtil = require('../utils');
-const colors = require('colors/safe');
+const utils = require('../utils');
 
 async function scheduleScrape (url) {
   await scrapePage(url, 500);
@@ -15,22 +14,21 @@ async function scrapeAll (limit, infoCallback) {
 
   for (let i = 0; i < pages.length; i++) {
     let href = pages[i].href;
-    console.log(`scraping: ${href}`);
+    utils.logger.info(`scraping: ${href}`);
     try {
       await scrapePage(href, limit);
       infoCallback(i, href);
     } catch (e) {
-      console.log(e.message);
+      utils.logger.error(e.message);
     }
   }
 }
 
 async function depthFirstScrape (initialHref, degrees = 10) {
   let page = await repo.getNode(initialHref, degrees);
-  console.log('degree: ', degrees);
   if (degrees <= 1) return Promise.resolve();
   if (page.edges.length > 0) {
-    console.log('scraping page: ', page.edges[0]);
+    utils.logger.info('scraping page: ' + page.edges[0]);
     let index = Math.floor(Math.random() * page.edges.length - 1);
     try {
       await scrapePage(page.edges[index]);
@@ -45,13 +43,12 @@ async function scrapeFrom (initialHref, degrees, currentDegree = 0, limit) {
 
   if (currentDegree >= degrees) return;
   for (let i = 0; i < page.edges.length; i++) {
-    console.log(colors.green('edge: ' + page.edges[i]));
+    utils.logger.info('edge: ' + page.edges[i]);
     try {
       let { links } = await scrapePage(page.edges[i], 30);
-      links.forEach(link => scrapeFrom(link, limit, degrees, currentDegree + 1));
+      links.forEach(link => scrapeFrom(link, degrees, currentDegree + 1, limit));
     } catch (e) {
-      console.log(colors.red('cannot be scraped: ' + page.edges[i]));
-      console.log(e);
+      utils.logger.error(`scraping page ${page.edges[i]} failed: ${e.message}`);
     }
   }
 }
@@ -61,8 +58,8 @@ async function scrapePage (href, resolveAfter) {
   try {
     html = await request(href);
   } catch (e) {
-    console.log(e);
-    return;
+    utils.logger.error(`FAILED TO FETCH: ` + e.message);
+    throw e;
   }
   let { links, title, type } = extractDetails(html);
 
@@ -75,9 +72,9 @@ async function scrapePage (href, resolveAfter) {
     });
   } catch (e) {
     if (/ER_DUP_ENTRY/.test(e.message)) {
-      console.log(`Page '${href}' already exists`);
+      utils.logger.error(`Page '${href}' already exists`);
     } else {
-      console.log(e);
+      utils.logger.error(`Unknown DB error: ${e}`);
     }
   }
 
@@ -91,7 +88,7 @@ async function scrapePage (href, resolveAfter) {
         scraped: false, description: ''
       });
       await repo.addEdge(href, links[i].href);
-      console.log(`added link ${i}: ` + links[i].href);
+      utils.logger.info(`added link ${i}: ` + links[i].href);
     } catch (e) {
       // do not log: double db entry error
     }
@@ -101,7 +98,7 @@ async function scrapePage (href, resolveAfter) {
 
 function extractDetails (html) {
   let title = $('.firstHeading', html).text();
-  let type = ScrapeUtil.getType(title);
+  let type = utils.getType(title);
   let details = extractText(html)
     .replace("'", '')
     .replace('"', '');
@@ -112,10 +109,10 @@ function extractDetails (html) {
     let attributes = linkData[i].attribs;
     if (attributes.title && attributes.href) {
       links.push({
-        uid: ScrapeUtil.generateUid(title),
-        title: ScrapeUtil.formatTitle(attributes.title),
-        type: ScrapeUtil.getType(attributes.title),
-        href: ScrapeUtil.formatLink(attributes.href)
+        uid: utils.generateUid(title),
+        title: utils.formatTitle(attributes.title),
+        type: utils.getType(attributes.title),
+        href: utils.formatLink(attributes.href)
       });
     }
   }

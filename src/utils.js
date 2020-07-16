@@ -1,5 +1,6 @@
 const UUID = require('uuid-by-string');
 const fetch = require('node-fetch');
+const colors = require('colors/safe');
 
 String.prototype.splice = function (idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
@@ -45,3 +46,9 @@ module.exports.generateUid = title => {
     .toLowerCase();
   return UUID(normalized);
 };
+
+module.exports.logger = {
+  success: msg => console.log(colors.green(msg)),
+  error: msg => console.error(colors.red(msg)),
+  info: msg => console.info(colors.blue(msg))
+}

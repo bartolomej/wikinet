@@ -4,7 +4,7 @@
         position: fixed;
         bottom: 20px;
         left: 20px;
-        color: #5976cf
+        color: #5976cf;
     }
     #stats span {
         font-weight: bold;
@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<a class="top-left-button" href="/add">CUSTOM WIKI PAGE</a>
+<a class="top-left-button" href="/add">NEW WIKI PAGE</a>
 <a style="position: fixed; top: 10px; right: 10px; z-index: 3" href="https://github.com/bartolomej/wikipedia-network"
    target="_blank">
     <img width="35px" class="rotate" style="width: 45px" src="public/images/github.png">
@@ -31,7 +31,10 @@
     <form class="form" method="GET" action="/graph">
         <div class="landing-top">
             <h1 style="color: #5976cf">Wikipedia Graph</h1>
-            <p style="color: lightslategrey">Visualized network of related Wikipedia pages.</p>
+            <p style="color: lightslategrey">Visualize network of related Wikipedia pages.</p>
+            {{#if error}}
+                <p style="color: red">{{error}}.</p>
+            {{/if}}
         </div>
         <div class="landing-bottom">
             <div class="form-group">

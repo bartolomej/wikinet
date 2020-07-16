@@ -5,6 +5,7 @@ const Inserts = require('./sql/Inserts');
 const Update = require('./sql/Update');
 const Delete = require('./sql/Delete');
 const Create = require('./sql/Create');
+const {logger} = require('../utils');
 const mysql = require('mysql');
 let connection;
 
@@ -31,13 +32,13 @@ async function init () {
     });
   }
   connection.connect();
-  console.log('DB connection success');
   // initialize database tables
   try {
     await query(Create.createAll());
   } catch (e) {
     // tables exist
-    console.log(e.message);
+    logger.error(e.message);
+    throw e;
   }
 }
 

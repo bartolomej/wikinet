@@ -3,9 +3,18 @@ const router = express.Router();
 const GraphDb = require('../db/graph');
 
 router.get('/', async (req, res, next) => {
-  let nodes = await GraphDb.getHighlyScrapedNodes();
-  let stats = await GraphDb.getCount();
-  res.render('index', { nodes, stats });
+  let nodes = [], stats = {}, error = null;
+  try {
+    nodes = await GraphDb.getHighlyScrapedNodes();
+    stats = await GraphDb.getCount();
+  } catch (e) {
+    if (/ER_USER_LIMIT_REACHED/.test(e.message)) {
+      error = `Database questions limit reached ☹. Come back in a while.️`
+    } else {
+      error = `Unknown error occurred !`
+    }
+  }
+  res.render('index', { nodes, stats, error });
 });
 
 router.get('/add', async (req, res, next) => {

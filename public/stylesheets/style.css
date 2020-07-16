@@ -22,11 +22,22 @@ body {
   align-items: center;
 }
 
+#content-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  margin: 0 auto;
+}
+
+@media (max-width: 700px) {
+ #content-container {
+   width: 90%;
+ }
+}
+
 #content-container .form {
-  position: fixed;
-  left: 50%;
-  transform: translate(-50%, 0);
-  top: 20vh;
   z-index: 2;
 }
 

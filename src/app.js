@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const utils = require('./utils');
 const GraphDb = require('./db/graph');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const indexRouter = require('./routes/views');
@@ -10,7 +11,9 @@ const usersRouter = require('./routes/api');
 
 const app = express();
 
-GraphDb.init();
+GraphDb.init()
+  .then(_ => utils.logger.success(`DB connection success`))
+  .catch(e => utils.logger.error(`DB connection failed: ${e}`));
 
 app.use(logger('dev'));
 app.use(express.json());
