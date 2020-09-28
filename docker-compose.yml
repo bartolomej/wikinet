@@ -1,0 +1,48 @@
+version: '3.3'
+
+# NOTE: .env file is automatically read
+# variables inside .env can be used for variable substitution
+# https://github.com/docker/compose/issues/4223#issuecomment-280077263
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wikinet.server
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=wikinet.db
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - PORT=8000
+    ports:
+      - '9000:8000'
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    networks:
+      - wikinet
+  db:
+    image: mysql
+    container_name: wikinet.db
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - wikinet
+    environment:
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+networks:
+  wikinet:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
