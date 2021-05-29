@@ -4,6 +4,10 @@ Visualize how pages on wikipedia are connected (up to 3 degrees of depth).
 
 ![ims](https://i.ibb.co/8P0byVb/Screenshot-2019-11-16-at-22-17-29.png)
 
+## Similar projects
+- [Six Degrees of Wikipedia](https://www.sixdegreesofwikipedia.com/)
+- [All pages lead to Philosophy](https://www.xefer.com/wikipedia)
+
 ## Run with docker
 
 1. [install docker-compose](https://docs.docker.com/compose/install/).
